@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+    
+    function isSuperAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'superAdmin';
+    }
+
+    // users collection
+    match /users/{userId} {
+      // Anyone authenticated can read their own profile, or admins can read all
+      allow read: if isAuthenticated() && (isOwner(userId) || isSuperAdmin());
+      
+      // Creating a profile is allowed only if the document ID matches the auth uid
+      allow create: if isAuthenticated() && isOwner(userId) 
+                    && request.resource.data.role == 'unknown' // Cannot elevate own role on creation
+                    && request.resource.data.approved == false; // Cannot approve self on creation
+      
+      // Updates are allowed, but users cannot change their own role or approval status
+      allow update: if isAuthenticated() && isOwner(userId)
+                    && request.resource.data.role == resource.data.role
+                    && request.resource.data.approved == resource.data.approved;
+                    
+      // Super admins can update anything
+      allow update, delete: if isAuthenticated() && isSuperAdmin();
+    }
+
+    // access_requests collection
+    match /access_requests/{requestId} {
+      // Users can read their own requests
+      allow read: if isAuthenticated() && (resource.data.uid == request.auth.uid || isSuperAdmin());
+      
+      // Users can create a request for themselves
+      allow create: if isAuthenticated() 
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.status == 'pending';
+                    
+      // Only admins can update or delete
+      allow update, delete: if isAuthenticated() && isSuperAdmin();
+    }
+
+    // audit_logs collection
+    match /audit_logs/{logId} {
+      // Anyone authenticated can create a log for themselves
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      
+      // Only admins can read logs
+      allow read: if isAuthenticated() && isSuperAdmin();
+      
+      // Logs are immutable
+      allow update, delete: if false;
+    }
+  }
+}
