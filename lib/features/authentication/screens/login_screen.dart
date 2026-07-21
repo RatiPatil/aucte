@@ -60,40 +60,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ),
           
-          // Header Overlay
+          // Logo Overlay
           Positioned(
-            top: MediaQuery.of(context).padding.top + 20,
-            left: 0,
-            right: 0,
-            child: Column(
-              children: [
-                Icon(Icons.local_hospital, size: 48, color: const Color(0xFF4C27AA)),
-                const SizedBox(height: 8),
-                Text(
-                  'AUCTE',
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: const Color(0xFF4C27AA),
-                    letterSpacing: 2,
+            top: MediaQuery.of(context).padding.top + 16,
+            left: 24,
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
+                ],
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  fit: BoxFit.cover,
                 ),
-                Text(
-                  'DOCTOR PORTAL',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF6B4EC4),
-                    letterSpacing: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Care. Connect. Cure.',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF4C27AA),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
 
