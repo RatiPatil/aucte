@@ -1,8 +1,20 @@
-/// AUCTE Design System — Color Palette.
+/// AUCTE Design System — Deep Purple Enterprise Healthcare Palette.
 ///
-/// Premium Government Healthcare color scheme matching reference.
-/// Features a teal primary, warm secondary, soft grey background,
-/// and a complete pastel system for cards.
+/// Enterprise Government Healthcare Palette:
+/// - Primary Brand (Deep Purple): #6D28D9
+/// - Primary Light: #F3E8FF
+/// - Primary Dark: #4C1D95
+/// - Accent (Medical Red): #C62828 (Errors / Failures ONLY)
+/// - Accent Light: #FEE2E2
+/// - Success: #16A34A (Validation & Upload Success ONLY)
+/// - Info: #2563EB (Informational notes ONLY)
+/// - Warning: #F59E0B
+/// - Primary Background: #FFFFFF
+/// - Surface: #FFFFFF
+/// - Text Primary: #1E293B
+/// - Text Secondary: #64748B
+/// - Border: #E5E7EB
+/// - Divider: #F1F5F9
 library;
 
 import 'package:flutter/material.dart';
@@ -10,73 +22,88 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // ── Primary — Teal ─────────────────────────────────────────────
-  static const Color primaryTeal = Color(0xFF0D838A);
-  static const Color primaryTealLight = Color(0xFF2CB1B8);
-  static const Color primaryTealDark = Color(0xFF075E63);
+  // ── Primary Brand — Deep Purple ─────────────────────────────────
+  static const Color deepPurple = Color(0xFF6D28D9);
+  static const Color primaryLight = Color(0xFFF3E8FF);
+  static const Color primaryDark = Color(0xFF4C1D95);
 
-  // ── Seed (for Material 3 ColorScheme.fromSeed) ────────────────
-  static const Color seedColor = primaryTeal;
+  // Backward compatibility aliases
+  static const Color darkOrange = deepPurple;
+  static const Color burntOrange = deepPurple;
+  static const Color primaryTeal = deepPurple;
+  static const Color primaryTealLight = primaryLight;
+  static const Color primaryTealDark = primaryDark;
+  static const Color seedColor = deepPurple;
 
-  // ── Secondary — Warm Orange ───────────────────────────────────
-  static const Color secondaryOrange = Color(0xFFF09A3E);
+  // ── Dark Slate Typography & Secondary ──────────────────────────
+  static const Color darkSlate = Color(0xFF1E293B);
+  static const Color deepSlate = darkSlate;
+  static const Color secondaryOrange = deepPurple;
 
-  // ── Surface / Background ──────────────────────────────────────
-  static const Color backgroundLight = Color(0xFFF4F6F8);
+  // ── Surface & Background ──────────────────────────────────────
+  static const Color backgroundLight = Color(0xFFFFFFFF);
   static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color backgroundDark = Color(0xFF121212);
-  static const Color surfaceDark = Color(0xFF1E1E1E);
+  static const Color backgroundDark = Color(0xFF0F172A);
+  static const Color surfaceDark = Color(0xFF1E293B);
 
-  // ── Pastels (Grid System) ─────────────────────────────────────
-  static const Color pastelBlue = Color(0xFFE2F5F8);
-  static const Color pastelCoral = Color(0xFFFDE8E8);
-  static const Color pastelGreen = Color(0xFFE8F8EE);
-  static const Color pastelLavender = Color(0xFFF3E8FF);
-  static const Color pastelCream = Color(0xFFFFF4E5);
+  // ── Borders & Dividers ─────────────────────────────────────────
+  static const Color borderLight = Color(0xFFE5E7EB);
+  static const Color divider = Color(0xFFF1F5F9);
+  static const Color outline = Color(0xFFCBD5E1);
 
-  // ── Neutral ───────────────────────────────────────────────────
-  static const Color grey50 = Color(0xFFFAFAFA);
-  static const Color grey100 = Color(0xFFF5F5F5);
-  static const Color grey200 = Color(0xFFEEEEEE);
-  static const Color grey300 = Color(0xFFE0E0E0);
-  static const Color grey400 = Color(0xFFBDBDBD);
-  static const Color grey500 = Color(0xFF9E9E9E);
-  static const Color grey600 = Color(0xFF757575);
-  static const Color grey700 = Color(0xFF616161);
-  static const Color grey800 = Color(0xFF424242);
-  static const Color grey900 = Color(0xFF212121);
+  // ── Accents & Semantic ────────────────────────────────────────
+  static const Color medicalRed = Color(0xFFC62828);
+  static const Color accentLight = Color(0xFFFEE2E2);
+  static const Color error = medicalRed;
 
-  // ── Semantic ──────────────────────────────────────────────────
-  static const Color success = Color(0xFF2E7D32);
-  static const Color warning = secondaryOrange;
-  static const Color error = Color(0xFFC62828);
-  static const Color info = Color(0xFF1565C0);
+  static const Color medicalGreen = Color(0xFF16A34A);
+  static const Color success = medicalGreen;
 
-  // ── Status Badge Colors ───────────────────────────────────────
-  static const Color activeGreen = pastelGreen;
-  static const Color activeGreenText = success;
-  static const Color pendingAmber = pastelCream;
-  static const Color pendingAmberText = warning;
-  static const Color inactiveGrey = grey100;
-  static const Color inactiveGreyText = grey600;
+  static const Color informationBlue = Color(0xFF2563EB);
+  static const Color info = informationBlue;
 
-  // ── Text ──────────────────────────────────────────────────────
-  static const Color textPrimary = Color(0xFF212121);
-  static const Color textSecondary = Color(0xFF757575);
-  static const Color textDisabled = Color(0xFFBDBDBD);
+  static const Color warning = Color(0xFFF59E0B);
+
+  // ── Neutrals & Text ───────────────────────────────────────────
+  static const Color textPrimary = Color(0xFF1E293B);
+  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textDisabled = Color(0xFF94A3B8);
   static const Color textOnPrimary = Color(0xFFFFFFFF);
 
-  // ── Divider / Outline ─────────────────────────────────────────
-  static const Color divider = Color(0xFFE0E0E0);
-  static const Color outline = Color(0xFFC8C8C8);
+  static const Color grey50 = Color(0xFFF8FAFC);
+  static const Color grey100 = Color(0xFFF1F5F9);
+  static const Color grey200 = Color(0xFFE2E8F0);
+  static const Color grey300 = Color(0xFFCBD5E1);
+  static const Color grey400 = Color(0xFF94A3B8);
+  static const Color grey500 = Color(0xFF64748B);
+  static const Color grey600 = Color(0xFF475569);
+  static const Color grey700 = Color(0xFF334155);
+  static const Color grey800 = Color(0xFF1E293B);
+  static const Color grey900 = Color(0xFF0F172A);
+
+  // ── Pastels Aliases (Soft Tint Fills) ─────────────────────────
+  static const Color pastelOrange = Color(0xFFF3E8FF);
+  static const Color pastelCoral = Color(0xFFFEE2E2);
+  static const Color pastelBlue = Color(0xFFEFF6FF);
+  static const Color pastelGreen = Color(0xFFF0FDF4);
+  static const Color pastelPurple = Color(0xFFF3E8FF);
+  static const Color pastelCream = Color(0xFFFFFBEB);
+
+  // ── Status Badges ─────────────────────────────────────────────
+  static const Color activeGreen = pastelGreen;
+  static const Color activeGreenText = medicalGreen;
+  static const Color pendingAmber = pastelCream;
+  static const Color pendingAmberText = warning;
+  static const Color inactiveGrey = Color(0xFFF1F5F9);
+  static const Color inactiveGreyText = textSecondary;
 
   // ── Dashboard Card Accents ────────────────────────────────────
-  static const Color accentPurple = Color(0xFF6A1B9A);
-  static const Color accentOrange = secondaryOrange;
+  static const Color accentPurple = deepPurple;
+  static const Color accentOrange = deepPurple;
 
   // ── Compliance Banner ─────────────────────────────────────────
   static const Color complianceBgLight = pastelGreen;
-  static const Color complianceBorderLight = Color(0xFFA5D6A7);
-  static const Color complianceTextLight = Color(0xFF388E3C);
-  static const Color complianceTextDark = Color(0xFF81C784);
+  static const Color complianceBorderLight = Color(0xFFBBF7D0);
+  static const Color complianceTextLight = medicalGreen;
+  static const Color complianceTextDark = Color(0xFF4ADE80);
 }

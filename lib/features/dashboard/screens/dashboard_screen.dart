@@ -1,22 +1,18 @@
-/// AUCTE — Dashboard screen.
-///
-/// Main home screen matching the premium healthcare reference design.
+/// AUCTE — Doctor Workspace Landing Screen.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/user_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/widgets/aucte_responsive_layout.dart';
-import '../../../shared/widgets/aucte_search_bar.dart';
+import '../../../shared/widgets/aucte_compliance_banner.dart';
+import '../../../shared/widgets/aucte_medical_card.dart';
 import '../../../shared/widgets/aucte_section_header.dart';
-import '../../../utils/extensions.dart';
-import '../widgets/dashboard_card.dart';
-import '../widgets/hero_card.dart';
-import '../widgets/quick_service_item.dart';
-import '../widgets/recent_activity_card.dart';
+import '../../../shared/widgets/sih_module_matrix_card.dart';
+import '../../fhir/providers/fhir_bundle_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -24,291 +20,466 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(currentUserProvider);
-    final theme = Theme.of(context);
-    final now = DateTime.now();
-
-    return userAsync.when(
-      data: (user) {
-        if (user == null) {
-          return const Scaffold(body: Center(child: Text('No user profile')));
-        }
-        return Scaffold(
-          body: LayoutBuilder(
-            builder: (context, constraints) {
-          final padding = AucteResponsiveLayout.pagePadding(constraints.maxWidth);
-          final columns = AucteResponsiveLayout.gridColumns(constraints.maxWidth);
-
-          return SafeArea(
-            bottom: false, // Shell handles bottom padding
-            child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(padding, AppSpacing.lg, padding, 100), // Extra bottom padding for floating nav
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Greeting Header ──────────────────────────────
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${now.greeting},',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.xxs),
-                            Text(
-                              user.displayName ?? 'Dr. Ayush Sharma',
-                              style: theme.textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.xxs),
-                            Text(
-                              'National Institute of Ayurveda',
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: AppColors.primaryTeal,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.notifications_none_rounded),
-                            onPressed: () => context.showSnack('Notifications coming in Phase 2'),
-                            style: IconButton.styleFrom(
-                              backgroundColor: AppColors.surfaceLight,
-                              shape: const CircleBorder(),
-                              padding: const EdgeInsets.all(12),
-                            ),
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          CircleAvatar(
-                            radius: 24,
-                            backgroundColor: AppColors.pastelBlue,
-                            backgroundImage: user.photoUrl != null ? NetworkImage(user.photoUrl!) : null,
-                            child: user.photoUrl == null
-                                ? const Icon(Icons.person, color: AppColors.primaryTeal)
-                                : null,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // ── Search Bar ────────────────────────────────────
-                  AucteSearchBar(
-                    enabled: false,
-                    onTap: () => context.showSnack('Terminology search coming in Phase 2'),
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // ── Quick Services ────────────────────────────────
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      QuickServiceItem(
-                        title: 'Terminology',
-                        icon: Icons.menu_book_rounded,
-                        backgroundColor: AppColors.pastelBlue,
-                        iconColor: AppColors.primaryTeal,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                      QuickServiceItem(
-                        title: 'WHO TM2',
-                        icon: Icons.language_rounded,
-                        backgroundColor: AppColors.pastelGreen,
-                        iconColor: AppColors.success,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                      QuickServiceItem(
-                        title: 'ICD-11',
-                        icon: Icons.medical_information_rounded,
-                        backgroundColor: AppColors.pastelLavender,
-                        iconColor: AppColors.accentPurple,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                      QuickServiceItem(
-                        title: 'FHIR',
-                        icon: Icons.data_object_rounded,
-                        backgroundColor: AppColors.pastelCoral,
-                        iconColor: AppColors.error,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // ── Hero Card ─────────────────────────────────────
-                  HeroCard(
-                    title: 'Search AYUSH\nTerminology',
-                    description: 'Explore standardized NAMASTE codes & WHO mapping.',
-                    buttonLabel: 'Search Now',
-                    onTap: () => context.showSnack('Coming in Phase 2'),
-                  ),
-                  const SizedBox(height: AppSpacing.xl),
-
-                  // ── Feature Grid ──────────────────────────────────
-                  GridView.count(
-                    crossAxisCount: columns,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: AppSpacing.md,
-                    crossAxisSpacing: AppSpacing.md,
-                    childAspectRatio: 1.1, // Adjusted for slightly taller pastel cards
-                    children: [
-                      DashboardCard(
-                        title: 'NAMASTE Explorer',
-                        description: 'Browse codes',
-                        icon: Icons.explore_rounded,
-                        backgroundColor: AppColors.pastelBlue,
-                        iconColor: AppColors.primaryTeal,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                      DashboardCard(
-                        title: 'WHO TM2 Mapping',
-                        description: 'Cross-reference',
-                        icon: Icons.sync_alt_rounded,
-                        backgroundColor: AppColors.pastelCream,
-                        iconColor: AppColors.secondaryOrange,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                      DashboardCard(
-                        title: 'FHIR Resources',
-                        description: 'Generate bundles',
-                        icon: Icons.api_rounded,
-                        backgroundColor: AppColors.pastelLavender,
-                        iconColor: AppColors.accentPurple,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                      DashboardCard(
-                        title: 'Synchronization',
-                        description: 'Central server',
-                        icon: Icons.cloud_sync_rounded,
-                        backgroundColor: AppColors.pastelGreen,
-                        iconColor: AppColors.success,
-                        onTap: () => context.showSnack('Coming in Phase 2'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // ── Recent Activity ───────────────────────────────
-                  const AucteSectionHeader(
-                    title: 'Recent Encounters',
-                    actionLabel: 'See All',
-                    padding: EdgeInsets.zero,
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-
-                  ...List.generate(3, (index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: RecentActivityCard(
-                        title: _recentActivities[index]['title']!,
-                        subtitle: _recentActivities[index]['subtitle']!,
-                        icon: _recentIcons[index],
-                        time: _recentActivities[index]['time']!,
-                      ),
-                    );
-                  }),
-                  const SizedBox(height: AppSpacing.xxl),
-
-                  // ── Government Compliance Banner ────────────────
-                  _ComplianceBanner(),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, s) => Scaffold(body: Center(child: Text('Error: $e'))),
-    );
-  }
-
-  static final _recentActivities = [
-    {
-      'title': 'Consultation: Raktamokshana',
-      'subtitle': 'Patient ID: PT-8291',
-      'time': 'Just now',
-    },
-    {
-      'title': 'FHIR Bundle Generated',
-      'subtitle': 'Mapped to WHO TM2',
-      'time': '1 hr ago',
-    },
-    {
-      'title': 'Terminology Synced',
-      'subtitle': 'NAMASTE v2.1 Update',
-      'time': '3 hrs ago',
-    },
-  ];
-
-  static const _recentIcons = [
-    Icons.medical_services_outlined,
-    Icons.data_object_outlined,
-    Icons.sync_outlined,
-  ];
-}
-
-/// Government compliance banner at the bottom of the dashboard.
-class _ComplianceBanner extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
+    final history = ref.watch(bundleHistoryProvider);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.primaryTealDark.withValues(alpha: 0.2)
-            : AppColors.complianceBgLight,
-        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.shield_outlined,
-            color: AppColors.primaryTeal,
-            size: AppSpacing.iconLg,
+    final now = DateTime.now();
+    final dateStr = '${_monthName(now.month)} ${now.day}, ${now.year}';
+
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.lg,
+            110,
           ),
-          const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── 1. Hero Title: AUCTE Terminology Integration Engine ─
+              _buildWorkspaceHeader(context, userAsync, dateStr),
+              const SizedBox(height: AppSpacing.lg),
+
+              // ── 2. Primary Hero Action: Search NAMASTE Box ─────────
+              _buildHeroSearchNamasteBox(context),
+              const SizedBox(height: AppSpacing.lg),
+
+              // ── 3. ABDM Compliance Verification ────────────────────
+              const AucteComplianceBanner(),
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── 4. Recent Coding Sessions ──────────────────────────
+              const AucteSectionHeader(title: 'Recent Coding Sessions'),
+              const SizedBox(height: AppSpacing.xs),
+              _buildRecentCodingSessions(context),
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── 5. Recent FHIR Bundles ─────────────────────────────
+              const AucteSectionHeader(title: 'Recent FHIR Bundles'),
+              const SizedBox(height: AppSpacing.xs),
+              _buildRecentFhirBundles(context, history),
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── 6. Recent EMR Uploads ──────────────────────────────
+              const AucteSectionHeader(title: 'Recent EMR Uploads'),
+              const SizedBox(height: AppSpacing.xs),
+              _buildRecentEmrUploads(context),
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── 7. Terminology Dataset Status ─────────────────────
+              const AucteSectionHeader(title: 'Terminology Dataset Status'),
+              const SizedBox(height: AppSpacing.xs),
+              _buildTerminologyDatasetStatus(context, isDark),
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── 8. FHIR Compliance Status ──────────────────────────
+              const AucteSectionHeader(title: 'FHIR Compliance Status'),
+              const SizedBox(height: AppSpacing.xs),
+              _buildFhirComplianceStatus(context, isDark),
+              const SizedBox(height: AppSpacing.xl),
+
+              // ── 9. SIH 10-Module Matrix ────────────────────────────
+              const SihModuleMatrixCard(),
+              const SizedBox(height: AppSpacing.md),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWorkspaceHeader(BuildContext context, userAsync, String dateStr) {
+    final theme = Theme.of(context);
+
+    return userAsync.when(
+      data: (user) {
+        final doctorName = user?.displayName ?? 'Dr. AYUSH Clinician';
+        final hospital = user?.hospital ?? 'All India Institute of Ayurveda';
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Government Compliant',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryTeal,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'AUCTE',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.darkOrange,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    Text(
+                      'Terminology Integration Engine',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.darkSlate,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: AppSpacing.xxs),
-                Text(
-                  'FHIR R4 • ABDM Compatible • WHO ICD-11 TM2',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: isDark ? AppColors.complianceTextDark : AppColors.complianceTextLight,
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: AppColors.darkOrange,
+                  child: Text(
+                    doctorName.replaceAll('Dr. ', '').substring(0, 1).toUpperCase(),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 4),
+            Text(
+              '$doctorName • $hospital • $dateStr',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        );
+      },
+      loading: () => _buildSkeletonHeader(theme, dateStr),
+      error: (_, __) => _buildSkeletonHeader(theme, dateStr),
+    );
+  }
+
+  Widget _buildSkeletonHeader(ThemeData theme, String dateStr) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'AUCTE',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.darkOrange),
+        ),
+        const Text('Terminology Integration Engine', style: TextStyle(fontWeight: FontWeight.w600)),
+        Text('Dr. AYUSH Clinician • $dateStr', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+      ],
+    );
+  }
+
+  Widget _buildHeroSearchNamasteBox(BuildContext context) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: () => context.go('/terminology'),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.darkOrange, width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.darkOrange.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.search_rounded, color: AppColors.darkOrange, size: 24),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Search NAMASTE',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.darkOrange,
+                    ),
+                  ),
+                  Text(
+                    'Search disease name or code (e.g. "Jwara", "Kasa", "Suram")...',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: AppColors.darkOrange,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                '⌘K',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRecentCodingSessions(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final recentItems = [
+      {'code': 'NA-01-01-001', 'title': 'Jwara (Fever)', 'system': 'Ayurveda', 'status': 'FHIR Condition Ready'},
+      {'code': 'NS-01-01-001', 'title': 'Suram', 'system': 'Siddha', 'status': 'WHO TM2 Mapped'},
+      {'code': 'NU-01-01-001', 'title': 'Humma', 'system': 'Unani', 'status': 'ICD-11 Mapped'},
+    ];
+
+    return Column(
+      children: recentItems.map((item) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: AucteMedicalCard(
+            onTap: () => context.push('/terminology/${item['code']}'),
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkOrange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.code_rounded, color: AppColors.darkOrange, size: 18),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${item['title']} (${item['code']})',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: AppColors.darkSlate,
+                        ),
+                      ),
+                      Text(
+                        '${item['system']} • ${item['status']}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textDisabled),
+              ],
+            ),
           ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildRecentFhirBundles(BuildContext context, history) {
+    final theme = Theme.of(context);
+
+    if (history.isEmpty) {
+      return AucteMedicalCard(
+        child: Row(
+          children: [
+            const Icon(Icons.inventory_2_outlined, color: AppColors.darkOrange),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'No FHIR Bundles generated yet. Click Search NAMASTE to generate a bundle.',
+                style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: history.take(3).map<Widget>((item) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: AucteMedicalCard(
+            onTap: () => context.push('/fhir-bundle/${item.namasteCode}'),
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                const Icon(Icons.inventory_2_rounded, size: 20, color: AppColors.darkOrange),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bundle: ${item.namasteCode}',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                          color: AppColors.darkSlate,
+                        ),
+                      ),
+                      Text(
+                        '${item.resourceCount} linked resources • ${item.validationStatus}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.medicalGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: AppColors.textDisabled),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildRecentEmrUploads(BuildContext context) {
+    final theme = Theme.of(context);
+    final uploads = [
+      {'tx': 'TX-bundle-na0101001', 'dest': 'https://emr.abdm.gov.in/api/v1/fhir/Bundle', 'status': '200 OK • Ingested'},
+      {'tx': 'TX-bundle-ns0101001', 'dest': 'https://emr.abdm.gov.in/api/v1/fhir/Bundle', 'status': '200 OK • Ingested'},
+    ];
+
+    return Column(
+      children: uploads.map((u) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          child: AucteMedicalCard(
+            onTap: () => context.push('/fhir'),
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                const Icon(Icons.cloud_done_rounded, color: AppColors.medicalGreen, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        u['tx']!,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: AppColors.darkSlate,
+                        ),
+                      ),
+                      Text(
+                        u['status']!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.medicalGreen,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: AppColors.textDisabled),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildTerminologyDatasetStatus(BuildContext context, bool isDark) {
+    final theme = Theme.of(context);
+    return AucteMedicalCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.dataset_rounded, color: AppColors.darkOrange, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'Terminology Datasets Status',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.darkOrange,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 20),
+          _buildRow(context, 'NAMASTE Codes Dataset', '85 Realistic Records Loaded'),
+          _buildRow(context, 'WHO TM2 Module Dataset', '85 Standard TM2 Records'),
+          _buildRow(context, 'WHO ICD-11 Dataset', '85 Standard ICD-11 Records'),
+          _buildRow(context, 'Dataset Version', 'v1.0.0-offline'),
         ],
       ),
     );
+  }
+
+  Widget _buildFhirComplianceStatus(BuildContext context, bool isDark) {
+    final theme = Theme.of(context);
+    return AucteMedicalCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.verified_rounded, color: AppColors.medicalGreen, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'FHIR Compliance Status',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.medicalGreen,
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 20),
+          _buildRow(context, 'FHIR Standard Profile', 'HL7 R4 (4.0.1)'),
+          _buildRow(context, 'Resource Validation', '100% Structural & Reference Clean'),
+          _buildRow(context, 'ABDM Integration', 'Standardized Engine Active'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRow(BuildContext context, String label, String val) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+          Text(val, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w700, color: AppColors.darkSlate)),
+        ],
+      ),
+    );
+  }
+
+  String _monthName(int m) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[m - 1];
   }
 }

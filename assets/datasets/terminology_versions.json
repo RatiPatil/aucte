@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-offline",
+  "releaseDate": "2026-07-31",
+  "description": "AUCTE Standardized AYUSH Clinical Terminology Offline Dataset v1.0 (Smart India Hackathon 2025 Edition)",
+  "author": "Ministry of Ayush & WHO ICD-11 Traditional Medicine Module 2",
+  "datasetCounts": {
+    "namasteCodes": 85,
+    "tm2Codes": 85,
+    "icd11Codes": 85,
+    "conceptMaps": 85
+  },
+  "supportedSystems": [
+    "Ayurveda",
+    "Siddha",
+    "Unani",
+    "Homeopathy",
+    "Yoga & Naturopathy"
+  ],
+  "isOfflineCompliant": true
+}

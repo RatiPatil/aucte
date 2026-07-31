@@ -21,18 +21,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isLoading = false;
   bool _isPasswordVisible = false;
 
+  Future<void> _handleLogin() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Email login coming soon. Use Google Sign In.')),
+    );
+  }
+
   Future<void> _handleGoogleLogin() async {
     setState(() {
       _isLoading = true;
     });
     try {
-      // Simulate quick network delay
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (mounted) {
-        context.go(AppRouter.dashboardPath);
-      }
+      await ref.read(authServiceProvider).signInWithGoogle();
+      // Navigation is handled by the router redirect listening to auth state.
     } catch (e) {
-      // ignore
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: $e')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -175,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     
                     // Sign In Button
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _isLoading ? null : _handleLogin,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF7C4DFF),
                         foregroundColor: Colors.white,

@@ -1,80 +1,84 @@
 /// AUCTE Design System — Typography.
 ///
-/// Professional healthcare typography using Inter exclusively for a
-/// soft, clean, premium feel matching Apple/Google Health.
+/// Premium healthcare typography using Plus Jakarta Sans exclusively for a
+/// modern, crisp, highly legible clinical experience matching Apple/Google Health.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'app_colors.dart';
+
 class AppTypography {
   AppTypography._();
 
-  /// Builds a complete [TextTheme] using Inter for all styles.
+  /// Builds a complete [TextTheme] using Plus Jakarta Sans for all styles.
   static TextTheme textTheme(Brightness brightness) {
     final Color textColor =
         brightness == Brightness.light
-            ? const Color(0xFF212121)
-            : const Color(0xFFE0E0E0);
+            ? AppColors.textPrimary
+            : const Color(0xFFF8FAFC);
 
     final Color secondaryColor =
         brightness == Brightness.light
-            ? const Color(0xFF757575)
-            : const Color(0xFFBDBDBD);
+            ? AppColors.textSecondary
+            : const Color(0xFF94A3B8);
 
     return TextTheme(
       // ── Display ─────────────────────────────────────────────
-      displayLarge: GoogleFonts.inter(
+      displayLarge: GoogleFonts.plusJakartaSans(
         fontSize: 57,
-        fontWeight: FontWeight.w400,
-        letterSpacing: -0.25,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.5,
         color: textColor,
       ),
-      displayMedium: GoogleFonts.inter(
+      displayMedium: GoogleFonts.plusJakartaSans(
         fontSize: 45,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.5,
         color: textColor,
       ),
-      displaySmall: GoogleFonts.inter(
+      displaySmall: GoogleFonts.plusJakartaSans(
         fontSize: 36,
-        fontWeight: FontWeight.w400,
+        fontWeight: FontWeight.w600,
+        letterSpacing: -0.25,
         color: textColor,
       ),
 
       // ── Headline ────────────────────────────────────────────
-      headlineLarge: GoogleFonts.inter(
+      headlineLarge: GoogleFonts.plusJakartaSans(
         fontSize: 32,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         letterSpacing: -0.5,
         color: textColor,
       ),
-      headlineMedium: GoogleFonts.inter(
+      headlineMedium: GoogleFonts.plusJakartaSans(
         fontSize: 28,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
         letterSpacing: -0.5,
         color: textColor,
       ),
-      headlineSmall: GoogleFonts.inter(
+      headlineSmall: GoogleFonts.plusJakartaSans(
         fontSize: 24,
         fontWeight: FontWeight.w600,
-        letterSpacing: -0.5,
+        letterSpacing: -0.3,
         color: textColor,
       ),
 
       // ── Title ───────────────────────────────────────────────
-      titleLarge: GoogleFonts.inter(
+      titleLarge: GoogleFonts.plusJakartaSans(
         fontSize: 22,
         fontWeight: FontWeight.w600,
-        letterSpacing: -0.5,
+        letterSpacing: -0.3,
         color: textColor,
       ),
-      titleMedium: GoogleFonts.inter(
+      titleMedium: GoogleFonts.plusJakartaSans(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.2,
         color: textColor,
       ),
-      titleSmall: GoogleFonts.inter(
+      titleSmall: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.1,
@@ -82,19 +86,19 @@ class AppTypography {
       ),
 
       // ── Body ────────────────────────────────────────────────
-      bodyLarge: GoogleFonts.inter(
+      bodyLarge: GoogleFonts.plusJakartaSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: textColor,
       ),
-      bodyMedium: GoogleFonts.inter(
+      bodyMedium: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         color: textColor,
       ),
-      bodySmall: GoogleFonts.inter(
+      bodySmall: GoogleFonts.plusJakartaSans(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
@@ -102,22 +106,22 @@ class AppTypography {
       ),
 
       // ── Label ───────────────────────────────────────────────
-      labelLarge: GoogleFonts.inter(
+      labelLarge: GoogleFonts.plusJakartaSans(
         fontSize: 14,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0,
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.1,
         color: textColor,
       ),
-      labelMedium: GoogleFonts.inter(
+      labelMedium: GoogleFonts.plusJakartaSans(
         fontSize: 12,
         fontWeight: FontWeight.w500,
-        letterSpacing: 0,
+        letterSpacing: 0.1,
         color: secondaryColor,
       ),
-      labelSmall: GoogleFonts.inter(
+      labelSmall: GoogleFonts.plusJakartaSans(
         fontSize: 11,
         fontWeight: FontWeight.w600,
-        letterSpacing: 0.2,
+        letterSpacing: 0.3,
         color: secondaryColor,
       ),
     );

@@ -2,6 +2,7 @@
 library;
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../models/audit_log_model.dart';
 import '../models/user_model.dart';
 import '../models/user_role.dart';
@@ -30,23 +31,27 @@ class AuthService {
       final credential = await _authRepo.signInWithGoogle();
       if (credential != null && credential.user != null) {
         final user = credential.user!;
-        await _auditRepo.logAction(AuditLogModel(
+        _auditRepo.logAction(AuditLogModel(
           userId: user.uid,
           email: user.email ?? '',
           action: AuditAction.login,
           status: AuditStatus.success,
           timestamp: DateTime.now(),
-        ));
+        )).catchError((e) {
+          debugPrint('Failed to log audit: $e');
+        });
       }
     } catch (e) {
       if (_authRepo.currentUser != null) {
-        await _auditRepo.logAction(AuditLogModel(
+        _auditRepo.logAction(AuditLogModel(
           userId: _authRepo.currentUser!.uid,
           email: _authRepo.currentUser!.email ?? '',
           action: AuditAction.login,
           status: AuditStatus.failed,
           timestamp: DateTime.now(),
-        ));
+        )).catchError((e) {
+          debugPrint('Failed to log audit: $e');
+        });
       }
       rethrow;
     }
@@ -54,13 +59,15 @@ class AuthService {
 
   Future<void> signOut() async {
     if (currentUser != null) {
-      await _auditRepo.logAction(AuditLogModel(
+      _auditRepo.logAction(AuditLogModel(
         userId: currentUser!.uid,
         email: currentUser!.email ?? '',
         action: AuditAction.logout,
         status: AuditStatus.success,
         timestamp: DateTime.now(),
-      ));
+      )).catchError((e) {
+        debugPrint('Failed to log audit: $e');
+      });
     }
     await _authRepo.signOut();
   }

@@ -3,6 +3,7 @@ library;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthRepository {
   AuthRepository({
@@ -21,16 +22,22 @@ class AuthRepository {
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null; // Cancelled
+      if (kIsWeb) {
+        final authProvider = GoogleAuthProvider();
+        authProvider.setCustomParameters({'prompt': 'select_account'});
+        return await _firebaseAuth.signInWithPopup(authProvider);
+      } else {
+        final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+        if (googleUser == null) return null; // Cancelled
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final OAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final OAuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
 
-      return await _firebaseAuth.signInWithCredential(credential);
+        return await _firebaseAuth.signInWithCredential(credential);
+      }
     } catch (e) {
       throw Exception('Failed to sign in with Google: $e');
     }

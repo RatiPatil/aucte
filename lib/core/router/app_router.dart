@@ -10,13 +10,28 @@ import '../../features/authentication/screens/splash_screen.dart';
 import '../../features/authentication/screens/request_access_screen.dart';
 import '../../features/authentication/screens/pending_approval_screen.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
+import '../../features/fhir/screens/fhir_resources_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/shell/screens/app_shell.dart';
+import '../../features/terminology/screens/namaste_explorer_screen.dart';
+import '../../features/terminology/screens/terminology_detail_screen.dart';
+import '../../features/terminology/screens/terminology_search_screen.dart';
+import '../../features/mapping/screens/mapping_screen.dart';
+import '../../features/fhir/screens/fhir_preview_screen.dart';
+import '../../features/fhir/screens/fhir_bundle_preview_screen.dart';
 import '../providers/auth_state_notifier.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  return AppRouter.createRouter(ref);
+  final router = AppRouter.createRouter(ref);
+  
+  ref.listen(appAuthStateProvider, (previous, next) {
+    if (previous != next) {
+      router.refresh();
+    }
+  });
+  
+  return router;
 });
 
 class AppRouter {
@@ -30,6 +45,11 @@ class AppRouter {
   static const String terminology = 'terminology';
   static const String clinical = 'clinical';
   static const String fhir = 'fhir';
+  static const String namasteExplorer = 'namasteExplorer';
+  static const String terminologyDetail = 'terminologyDetail';
+  static const String mapping = 'mapping';
+  static const String fhirPreview = 'fhirPreview';
+  static const String fhirBundle = 'fhirBundle';
   static const String profile = 'profile';
   static const String settings = 'settings';
 
@@ -41,6 +61,8 @@ class AppRouter {
   static const String terminologyPath = '/terminology';
   static const String clinicalPath = '/clinical';
   static const String fhirPath = '/fhir';
+  static const String fhirBundlePath = '/fhir-bundle/:code';
+  static const String namasteExplorerPath = '/namaste-explorer';
   static const String profilePath = '/profile';
   static const String settingsPath = '/settings';
 
@@ -54,9 +76,33 @@ class AppRouter {
       debugLogDiagnostics: true,
       redirect: (context, state) {
         final path = state.uri.path;
+        final authState = ref.read(appAuthStateProvider);
         
-        // --- TEMPORARY BYPASS FOR REVIEW ---
-        // Always allow navigation anywhere
+        final isLogin = path == loginPath;
+        final isSplash = path == splashPath;
+        
+        if (authState == AppAuthState.loading) return null;
+        
+        if (authState == AppAuthState.unauthenticated) {
+          if (!isLogin && !isSplash) return loginPath;
+          return null;
+        }
+        
+        if (authState == AppAuthState.authenticatedAndApproved) {
+          if (isLogin || isSplash) return dashboardPath;
+          return null;
+        }
+        
+        if (authState == AppAuthState.authenticatedPending) {
+          if (path != pendingApprovalPath) return pendingApprovalPath;
+          return null;
+        }
+        
+        if (authState == AppAuthState.authenticatedUnknown) {
+          // Can redirect to requestAccessPath if we didn't auto-provision
+          return null;
+        }
+        
         return null;
       },
       routes: [
@@ -94,12 +140,45 @@ class AppRouter {
             GoRoute(
               path: terminologyPath,
               name: terminology,
-              pageBuilder: (context, state) => NoTransitionPage(
-                child: _PlaceholderScreen(
-                  title: 'Terminology',
-                  icon: Icons.medical_information_outlined,
-                  description: 'AYUSH terminology search will be available in Phase 2.',
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: TerminologySearchScreen(),
+              ),
+              routes: [
+                GoRoute(
+                  path: ':code',
+                  name: terminologyDetail,
+                  builder: (context, state) {
+                    final code = state.pathParameters['code']!;
+                    return TerminologyDetailScreen(code: code);
+                  },
+                  routes: [
+                    GoRoute(
+                      path: 'mapping',
+                      name: mapping,
+                      builder: (context, state) {
+                        final code = state.pathParameters['code']!;
+                        return MappingScreen(code: code);
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'fhirPreview',
+                          name: fhirPreview,
+                          builder: (context, state) {
+                            final code = state.pathParameters['code']!;
+                            return FhirPreviewScreen(code: code);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+              ],
+            ),
+            GoRoute(
+              path: namasteExplorerPath,
+              name: namasteExplorer,
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: NamasteExplorerScreen(),
               ),
             ),
             GoRoute(
@@ -116,13 +195,17 @@ class AppRouter {
             GoRoute(
               path: fhirPath,
               name: fhir,
-              pageBuilder: (context, state) => NoTransitionPage(
-                child: _PlaceholderScreen(
-                  title: 'FHIR Resources',
-                  icon: Icons.api_outlined,
-                  description: 'FHIR bundle generation will be available in Phase 2.',
-                ),
+              pageBuilder: (context, state) => const NoTransitionPage(
+                child: FhirResourcesScreen(),
               ),
+            ),
+            GoRoute(
+              path: fhirBundlePath,
+              name: fhirBundle,
+              builder: (context, state) {
+                final code = state.pathParameters['code'] ?? 'NA-01-01-001';
+                return FhirBundlePreviewScreen(code: code);
+              },
             ),
             GoRoute(
               path: profilePath,

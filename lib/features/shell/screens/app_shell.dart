@@ -46,7 +46,8 @@ class AppShell extends StatelessWidget {
     if (location.startsWith(AppRouter.terminologyPath)) return 1;
     if (location.startsWith(AppRouter.clinicalPath)) return 2;
     if (location.startsWith(AppRouter.fhirPath)) return 3;
-    if (location.startsWith(AppRouter.profilePath)) return 4;
+    if (location.startsWith('/integration')) return 4;
+    if (location.startsWith(AppRouter.profilePath)) return 5;
     return 0;
   }
 
@@ -56,6 +57,7 @@ class AppShell extends StatelessWidget {
       AppRouter.terminologyPath,
       AppRouter.clinicalPath,
       AppRouter.fhirPath,
+      AppRouter.fhirPath, // Integration tab maps to FHIR engine / history
       AppRouter.profilePath,
     ];
     context.go(routes[index]);

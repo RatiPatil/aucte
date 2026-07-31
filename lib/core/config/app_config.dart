@@ -26,8 +26,8 @@ class AppConfig {
   static const double tabletBreakpoint = 1200;
 
   // ── Animation Durations ───────────────────────────────────────
-  static const Duration splashDuration = Duration(milliseconds: 2500);
-  static const Duration fadeInDuration = Duration(milliseconds: 1500);
+  static const Duration splashDuration = Duration(milliseconds: 500);
+  static const Duration fadeInDuration = Duration(milliseconds: 300);
   static const Duration pageTransitionDuration = Duration(milliseconds: 300);
 
   // ── Links ─────────────────────────────────────────────────────
