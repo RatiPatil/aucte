@@ -12,6 +12,8 @@ import '../../../shared/widgets/aucte_compliance_banner.dart';
 import '../../../shared/widgets/aucte_medical_card.dart';
 import '../../../shared/widgets/aucte_section_header.dart';
 import '../../../shared/widgets/sih_module_matrix_card.dart';
+import '../../authentication/models/user_model.dart';
+import '../../fhir/models/bundle_history_model.dart';
 import '../../fhir/providers/fhir_bundle_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -91,7 +93,11 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildWorkspaceHeader(BuildContext context, userAsync, String dateStr) {
+  Widget _buildWorkspaceHeader(
+    BuildContext context,
+    AsyncValue<UserModel?> userAsync,
+    String dateStr,
+  ) {
     final theme = Theme.of(context);
 
     return userAsync.when(
@@ -293,7 +299,10 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentFhirBundles(BuildContext context, history) {
+  Widget _buildRecentFhirBundles(
+    BuildContext context,
+    List<BundleHistoryModel> history,
+  ) {
     final theme = Theme.of(context);
 
     if (history.isEmpty) {
