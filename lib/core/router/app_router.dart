@@ -99,7 +99,12 @@ class AppRouter {
         }
         
         if (authState == AppAuthState.authenticatedUnknown) {
-          // Can redirect to requestAccessPath if we didn't auto-provision
+          if (path != requestAccessPath) return requestAccessPath;
+          return null;
+        }
+
+        if (authState == AppAuthState.authVerificationError) {
+          if (!isLogin && !isSplash) return loginPath;
           return null;
         }
         

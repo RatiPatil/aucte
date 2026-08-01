@@ -10,8 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
-import '../models/user_model.dart';
-import '../models/user_role.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -29,6 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
   bool _isGoogleLoading = false;
   bool _isPasswordVisible = false;
   String? _errorMessage;
+  String? _loadingMessage;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
@@ -62,6 +61,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _loadingMessage = 'Signing in with credentials...';
     });
 
     try {
@@ -77,24 +77,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
       final user = credential.user;
       if (user != null) {
         debugPrint('[AUTH] Firebase auth succeeded for UID: ${user.uid}');
-        final userRepo = ref.read(userRepositoryProvider);
-        final profile = await userRepo.getUser(user.uid);
+        setState(() => _loadingMessage = 'Verifying your AUCTE access...');
 
-        if (profile == null) {
-          debugPrint('[AUTH] Provisioning new doctor profile in Firestore for ${user.uid}');
-          final newProfile = UserModel(
-            uid: user.uid,
-            email: email,
-            displayName: user.displayName ?? 'Dr. Ratikant',
-            role: email.contains('admin') ? UserRole.terminologyAdmin : UserRole.doctor,
-            approved: true,
-            hospital: 'All India Institute of Ayurveda',
-            department: 'AYUSH Clinical Terminology Wing',
-            designation: 'Government AYUSH Doctor',
-            createdAt: DateTime.now(),
-            lastLogin: DateTime.now(),
-          );
-          await userRepo.createUser(newProfile);
+        final userRepo = ref.read(userRepositoryProvider);
+        final lookupResult = await userRepo.getUser(user.uid);
+
+        if (lookupResult.isNotFound) {
+          debugPrint('[AUTH] User profile does not exist -> Routing to Request Access');
+          if (mounted) {
+            context.go(AppRouter.requestAccessPath);
+          }
+        } else if (lookupResult.isFailed) {
+          debugPrint('[AUTH] Firestore verification failed: ${lookupResult.errorMessage}');
+          if (mounted) {
+            setState(() {
+              _errorMessage = 'Unable to verify your account. Please check your connection and try again.';
+              _isLoading = false;
+              _loadingMessage = null;
+            });
+          }
         }
       }
     } on FirebaseAuthException catch (e) {
@@ -109,6 +110,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
             _errorMessage = 'Authentication failed: ${e.message}';
           }
           _isLoading = false;
+          _loadingMessage = null;
         });
       }
     } catch (e) {
@@ -117,6 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
         setState(() {
           _errorMessage = 'Authentication failed. Please check your credentials.';
           _isLoading = false;
+          _loadingMessage = null;
         });
       }
     }
@@ -126,6 +129,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
     setState(() {
       _isGoogleLoading = true;
       _errorMessage = null;
+      _loadingMessage = 'Signing in with Google...';
     });
 
     try {
@@ -135,34 +139,54 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
       final user = credential.user;
 
       if (user != null) {
-        debugPrint('[AUTH] Google auth succeeded for UID: ${user.uid}');
-        final userRepo = ref.read(userRepositoryProvider);
-        final profile = await userRepo.getUser(user.uid);
+        debugPrint('[AUTH] Google authentication succeeded for UID: ${user.uid}');
+        setState(() => _loadingMessage = 'Verifying application access...');
 
-        if (profile == null) {
-          debugPrint('[AUTH] Provisioning new Google user profile in Firestore');
-          final newProfile = UserModel(
-            uid: user.uid,
-            email: user.email ?? 'dr.ratikant@ayush.gov.in',
-            displayName: user.displayName ?? 'Dr. Ratikant',
-            photoUrl: user.photoURL,
-            role: UserRole.doctor,
-            approved: true,
-            hospital: 'All India Institute of Ayurveda',
-            department: 'AYUSH Clinical Interoperability Wing',
-            designation: 'Government AYUSH Doctor',
-            createdAt: DateTime.now(),
-            lastLogin: DateTime.now(),
-          );
-          await userRepo.createUser(newProfile);
+        final userRepo = ref.read(userRepositoryProvider);
+        final lookupResult = await userRepo.getUser(user.uid);
+
+        if (lookupResult.isNotFound) {
+          debugPrint('[AUTH] User profile does not exist -> Routing to Request Access');
+          if (mounted) {
+            context.go(AppRouter.requestAccessPath);
+          }
+        } else if (lookupResult.isFound && lookupResult.profile != null) {
+          final profile = lookupResult.profile!;
+          debugPrint('[AUTH] Profile found (approved=${profile.approved}, isActive=${profile.isActive}, role=${profile.role.name})');
+          if (profile.approved && profile.isActive) {
+            debugPrint('[AUTH] Access granted -> Workspace');
+          }
+        } else if (lookupResult.isFailed) {
+          debugPrint('[AUTH] Firestore verification failed');
+          if (mounted) {
+            setState(() {
+              _errorMessage = 'Unable to verify your account. Please check your connection and try again.';
+              _isGoogleLoading = false;
+              _loadingMessage = null;
+            });
+          }
         }
+      }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('[AUTH] Google FirebaseAuthException: ${e.code} - ${e.message}');
+      if (mounted) {
+        setState(() {
+          if (e.code == 'popup-closed-by-user') {
+            _errorMessage = 'Google Sign-In window was closed.';
+          } else {
+            _errorMessage = 'Google Sign-In failed: ${e.message}';
+          }
+          _isGoogleLoading = false;
+          _loadingMessage = null;
+        });
       }
     } catch (e) {
       debugPrint('[AUTH] Google login error: $e');
       if (mounted) {
         setState(() {
-          _errorMessage = 'Google Sign-In cancelled or unavailable.';
+          _errorMessage = 'Google Sign-In failed. Please try again.';
           _isGoogleLoading = false;
+          _loadingMessage = null;
         });
       }
     }
@@ -277,7 +301,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                     ),
                     const SizedBox(height: 24),
 
-                    // ── 4. Animated Error Banner ───────────────────────
+                    // ── 4. Loading Status / Animated Error Banner ──────
+                    if (_loadingMessage != null && _errorMessage == null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.deepPurple.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: AppColors.deepPurple.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(color: AppColors.deepPurple, strokeWidth: 2),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              _loadingMessage!,
+                              style: const TextStyle(color: AppColors.deepPurple, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
                     if (_errorMessage != null) ...[
                       AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
@@ -288,14 +340,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: AppColors.medicalRed.withValues(alpha: 0.4)),
                         ),
-                        child: Row(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.error_outline_rounded, color: AppColors.medicalRed, size: 18),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                _errorMessage!,
-                                style: const TextStyle(color: AppColors.medicalRed, fontSize: 12, fontWeight: FontWeight.bold),
+                            Row(
+                              children: [
+                                const Icon(Icons.error_outline_rounded, color: AppColors.medicalRed, size: 18),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: const TextStyle(color: AppColors.medicalRed, fontSize: 12, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: OutlinedButton(
+                                onPressed: () {
+                                  setState(() => _errorMessage = null);
+                                  _handleEmailLogin();
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  side: const BorderSide(color: AppColors.medicalRed),
+                                ),
+                                child: const Text('Retry Verification', style: TextStyle(fontSize: 11, color: AppColors.medicalRed)),
                               ),
                             ),
                           ],
@@ -568,14 +641,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
         child: _isLoading
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  SizedBox(
+                children: [
+                  const SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                   ),
-                  SizedBox(width: 12),
-                  Text('Signing in...', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  const SizedBox(width: 12),
+                  Text(_loadingMessage ?? 'Signing in...', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
                 ],
               )
             : Row(
@@ -604,10 +677,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         child: _isGoogleLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(color: AppColors.deepPurple, strokeWidth: 2.5),
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(color: AppColors.deepPurple, strokeWidth: 2.5),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(_loadingMessage ?? 'Verifying Google Account...', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.deepPurple)),
+                ],
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
