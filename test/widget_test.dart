@@ -12,5 +12,8 @@ void main() {
 
     // Verify the splash screen shows the app name
     expect(find.text('AUCTE'), findsOneWidget);
+
+    // Complete splash timer cleanly
+    await tester.pump(const Duration(seconds: 3));
   });
 }
