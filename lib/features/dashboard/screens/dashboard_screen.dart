@@ -1,4 +1,4 @@
-/// AUCTE — Module 2 Terminology Repository & Clinical Search Workspace.
+/// AUCTE — Doctor Workspace Dashboard Screen (Reference UI Replica).
 library;
 
 import 'dart:math' as math;
@@ -21,31 +21,19 @@ class DashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen>
-    with SingleTickerProviderStateMixin {
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   bool _isSearchFocused = false;
   String _query = '';
-  late AnimationController _animController;
 
   @override
   void initState() {
     super.initState();
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-
     _searchFocusNode.addListener(() {
       setState(() {
         _isSearchFocused = _searchFocusNode.hasFocus;
       });
-      if (_searchFocusNode.hasFocus) {
-        _animController.forward();
-      } else {
-        _animController.reverse();
-      }
     });
   }
 
@@ -53,7 +41,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   void dispose() {
     _searchController.dispose();
     _searchFocusNode.dispose();
-    _animController.dispose();
     super.dispose();
   }
 
@@ -75,33 +62,45 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             AppSpacing.lg,
             AppSpacing.md,
             AppSpacing.lg,
-            110,
+            120,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── 1. Welcome Header ────────────────────────────────
-              _buildWelcomeHeader(context, userAsync),
+              // ── 1. Top Header Bar ─────────────────────────────────
+              _buildTopHeaderBar(context, userAsync),
               const SizedBox(height: 20),
 
-              // ── 2. HERO SEARCH BAR (Always Visible, Animated Focus) ─
+              // ── 2. Doctor Greeting ────────────────────────────────
+              _buildDoctorGreeting(context, userAsync),
+              const SizedBox(height: 18),
+
+              // ── 3. HERO SEARCH BAR ────────────────────────────────
               _buildHeroSearchBar(context, isDark, searchResults),
-              const SizedBox(height: 20),
-
-              // ── 3. Compact Quick Actions ──────────────────────────
-              _buildQuickActionsRow(context, isDark),
               const SizedBox(height: 24),
 
-              // ── 4. Recent Searches Compact List ───────────────────
-              _buildRecentSearchesSection(context, isDark),
+              // ── 4. Quick Actions (5 Cards Row) ───────────────────
+              _buildSectionHeader('Quick Actions', null),
+              const SizedBox(height: 12),
+              _buildQuickActionsGrid(context),
               const SizedBox(height: 24),
 
-              // ── 5. Trending AYUSH Terminology Small Grid ──────────
-              _buildTrendingTerminologyGrid(context, isDark),
+              // ── 5. Continue Working (Horizontal Scroll Cards) ────
+              _buildSectionHeader('Continue Working', () => context.go('/terminology')),
+              const SizedBox(height: 12),
+              _buildContinueWorkingList(context),
               const SizedBox(height: 24),
 
-              // ── 6. Lightweight Module 2 Analytics Charts ───────────
-              _buildModule2ChartsSection(context, isDark),
+              // ── 6. Analytics Section (Donut + Top Searched) ──────
+              _buildAnalyticsRow(context, isDark),
+              const SizedBox(height: 24),
+
+              // ── 7. Today's Activity (4 Statistics Card) ───────────
+              _buildTodaysActivityCard(context, isDark),
+              const SizedBox(height: 24),
+
+              // ── 8. Recent Activity & 7-Day Search Trend ───────────
+              _buildRecentActivityAndTrendRow(context, isDark),
             ],
           ),
         ),
@@ -109,92 +108,135 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     );
   }
 
-  // ── 1. Welcome Header ───────────────────────────────────────────
-  Widget _buildWelcomeHeader(BuildContext context, AsyncValue<UserModel?> userAsync) {
-    final theme = Theme.of(context);
-
-    return userAsync.when(
-      data: (user) {
-        final doctorName = user?.displayName ?? 'Dr. Ratikant';
-        final hospital = user?.hospital ?? 'All India Institute of Ayurveda';
-
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  // ── 1. Top Header Bar ─────────────────────────────────────────────
+  Widget _buildTopHeaderBar(BuildContext context, AsyncValue<UserModel?> userAsync) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
           children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppColors.deepPurple.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.eco_rounded, color: AppColors.deepPurple, size: 22),
+            ),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: const [
                 Text(
                   'AUCTE',
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20,
                     color: AppColors.deepPurple,
-                    letterSpacing: 0.8,
+                    letterSpacing: 0.5,
                   ),
                 ),
                 Text(
                   'FHIR Clinical Terminology Platform',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.darkSlate,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '👋 Welcome $doctorName • $hospital',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
-            CircleAvatar(
-              radius: 22,
-              backgroundColor: AppColors.deepPurple,
-              child: Text(
-                doctorName.replaceAll('Dr. ', '').substring(0, 1).toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+          ],
+        ),
+        Row(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.notifications_none_rounded, color: AppColors.darkSlate, size: 20),
                 ),
+                Positioned(
+                  right: 2,
+                  top: 2,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: AppColors.medicalRed,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Text(
+                      '3',
+                      style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 10),
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.deepPurple,
+              child: const Text(
+                'R',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
               ),
             ),
           ],
-        );
-      },
-      loading: () => const Text('Loading Clinician Context...', style: TextStyle(color: AppColors.textSecondary)),
-      error: (_, __) => const Text('AUCTE Clinical Engine', style: TextStyle(color: AppColors.deepPurple, fontWeight: FontWeight.bold)),
+        ),
+      ],
     );
   }
 
-  // ── 2. HERO SEARCH BAR ──────────────────────────────────────────
-  Widget _buildHeroSearchBar(
-      BuildContext context, bool isDark, List<dynamic> suggestions) {
+  // ── 2. Doctor Greeting ───────────────────────────────────────────
+  Widget _buildDoctorGreeting(BuildContext context, AsyncValue<UserModel?> userAsync) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        Text(
+          'Good Morning, Dr. Ratikant 👋',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: AppColors.darkSlate,
+            letterSpacing: -0.3,
+          ),
+        ),
+        SizedBox(height: 2),
+        Text(
+          'Ready to code AYUSH terminology today?',
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── 3. HERO SEARCH BAR ──────────────────────────────────────────
+  Widget _buildHeroSearchBar(BuildContext context, bool isDark, List<NamasteCodeModel> suggestions) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutCubic,
           decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: _isSearchFocused
-                  ? AppColors.deepPurple
-                  : AppColors.borderLight,
-              width: _isSearchFocused ? 2.0 : 1.0,
+              color: _isSearchFocused ? AppColors.deepPurple : AppColors.deepPurple.withValues(alpha: 0.4),
+              width: _isSearchFocused ? 2.0 : 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: _isSearchFocused
-                    ? AppColors.deepPurple.withValues(alpha: 0.12)
-                    : Colors.black.withValues(alpha: 0.03),
-                blurRadius: _isSearchFocused ? 16 : 8,
+                color: AppColors.deepPurple.withValues(alpha: 0.08),
+                blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
             ],
@@ -207,76 +249,41 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
               ref.read(terminologySearchQueryProvider.notifier).state = val.trim();
             },
             onSubmitted: (val) {
-              if (val.trim().isNotEmpty) {
-                context.go('/terminology');
-              }
+              if (val.trim().isNotEmpty) context.go('/terminology');
             },
             decoration: InputDecoration(
-              hintText: 'Search disease name or NAMASTE code (e.g., "Jwara", "Kasa", "Suram")...',
-              hintStyle: const TextStyle(
-                color: AppColors.textDisabled,
-                fontSize: 13,
-              ),
-              prefixIcon: const Icon(
-                Icons.search_rounded,
-                color: AppColors.deepPurple,
-                size: 24,
-              ),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_query.isNotEmpty)
-                    IconButton(
-                      icon: const Icon(Icons.clear_rounded, color: AppColors.textSecondary, size: 18),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() => _query = '');
-                      },
-                    ),
-                  Container(
-                    margin: const EdgeInsets.only(right: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: AppColors.deepPurple.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Text(
-                      '⌘K',
-                      style: TextStyle(
-                        color: AppColors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 11,
-                      ),
-                    ),
-                  ),
-                ],
+              hintText: 'Search NAMASTE, TM2, ICD-11...',
+              hintStyle: const TextStyle(color: AppColors.textDisabled, fontSize: 13),
+              prefixIcon: const Icon(Icons.search_rounded, color: AppColors.deepPurple, size: 22),
+              suffixIcon: Container(
+                margin: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.deepPurple.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  '⌘ K',
+                  style: TextStyle(color: AppColors.deepPurple, fontWeight: FontWeight.bold, fontSize: 11),
+                ),
               ),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
               focusedBorder: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             ),
           ),
         ),
-
-        // Instant Debounced Suggestions Dropdown
         if (_query.isNotEmpty && suggestions.isNotEmpty) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Container(
-            constraints: const BoxConstraints(maxHeight: 220),
+            constraints: const BoxConstraints(maxHeight: 200),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.surfaceDark : Colors.white,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.borderLight),
               boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.08),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
+                BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4)),
               ],
             ),
             child: ListView.separated(
@@ -287,17 +294,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 final item = suggestions[idx];
                 return ListTile(
                   dense: true,
-                  leading: const Icon(Icons.medical_services_outlined, color: AppColors.deepPurple, size: 18),
-                  title: Text(
-                    '${item.namasteTerm} (${item.namasteCode})',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.darkSlate),
-                  ),
-                  subtitle: Text(
-                    'System: ${item.system} • Category: ${item.category}',
-                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.textDisabled),
-                  onTap: () => context.push('/terminology/${item.namasteCode}'),
+                  title: Text('${item.name} (${item.code})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  subtitle: Text(item.system, style: const TextStyle(fontSize: 10)),
+                  onTap: () => context.push('/terminology/${item.code}'),
                 );
               },
             ),
@@ -307,350 +306,389 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     );
   }
 
-  // ── 3. Compact Quick Actions Bar (Icon Buttons Only) ────────────
-  Widget _buildQuickActionsRow(BuildContext context, bool isDark) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildCompactActionButton(
-          context,
-          icon: Icons.search_rounded,
-          label: 'Search',
-          onTap: () => context.go('/terminology'),
-        ),
-        _buildCompactActionButton(
-          context,
-          icon: Icons.grid_view_rounded,
-          label: 'Categories',
-          onTap: () => context.go('/terminology'),
-        ),
-        _buildCompactActionButton(
-          context,
-          icon: Icons.history_rounded,
-          label: 'Recent',
-          onTap: () => context.go('/terminology'),
-        ),
-        _buildCompactActionButton(
-          context,
-          icon: Icons.star_border_rounded,
-          label: 'Favorites',
-          onTap: () => context.go('/terminology'),
-        ),
-      ],
-    );
-  }
+  // ── 4. Quick Actions (5 Cards Grid) ──────────────────────────────
+  Widget _buildQuickActionsGrid(BuildContext context) {
+    final actions = [
+      {'icon': Icons.search_rounded, 'label': 'Search\nTerminology', 'bg': const Color(0xFFF3E8FF), 'col': AppColors.deepPurple, 'route': '/terminology'},
+      {'icon': Icons.grid_view_rounded, 'label': 'Browse\nCategories', 'bg': const Color(0xFFFFF3DC), 'col': AppColors.warning, 'route': '/terminology'},
+      {'icon': Icons.account_tree_rounded, 'label': 'Mapping\nEngine', 'bg': const Color(0xFFF3E8FF), 'col': AppColors.deepPurple, 'route': '/clinical'},
+      {'icon': Icons.code_rounded, 'label': 'FHIR\nGenerator', 'bg': const Color(0xFFE6F4EA), 'col': AppColors.medicalGreen, 'route': '/fhir'},
+      {'icon': Icons.layers_rounded, 'label': 'Bundle\nGenerator', 'bg': const Color(0xFFE8F0FE), 'col': const Color(0xFF2563EB), 'route': '/fhir'},
+    ];
 
-  Widget _buildCompactActionButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.surfaceDark : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.borderLight),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: AppColors.deepPurple, size: 18),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-                color: AppColors.darkSlate,
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: actions.map((a) {
+          return Container(
+            margin: const EdgeInsets.only(right: 10),
+            width: 86,
+            child: AucteMedicalCard(
+              onTap: () => context.go(a['route'] as String),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+              child: Column(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: a['bg'] as Color,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(a['icon'] as IconData, color: a['col'] as Color, size: 20),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    a['label'] as String,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.darkSlate,
+                      height: 1.1,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  // ── 4. Recent Searches Compact List ──────────────────────────────
-  Widget _buildRecentSearchesSection(BuildContext context, bool isDark) {
-    final recentSearches = [
-      {'code': 'NA-01-01-001', 'name': 'Jwara (Fever)', 'system': 'Ayurveda'},
-      {'code': 'NS-01-01-001', 'name': 'Suram', 'system': 'Siddha'},
-      {'code': 'NU-01-01-001', 'name': 'Humma', 'system': 'Unani'},
+  // ── 5. Continue Working Cards ────────────────────────────────────
+  Widget _buildContinueWorkingList(BuildContext context) {
+    final items = [
+      {'title': 'Jwara (Fever)', 'code': 'NA-01-01-001'},
+      {'title': 'Kasa (Cough)', 'code': 'NA-02-01-002'},
+      {'title': 'Prameha', 'code': 'NA-03-01-003'},
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Recent Searches',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: AppColors.darkSlate,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Column(
-          children: recentSearches.map((item) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 6),
-              child: AucteMedicalCard(
-                onTap: () => context.push('/terminology/${item['code']}'),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                child: Row(
-                  children: [
-                    const Icon(Icons.history_rounded, size: 18, color: AppColors.deepPurple),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        '${item['name']} (${item['code']})',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                          color: AppColors.darkSlate,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        item['system']!,
-                        style: const TextStyle(
-                          color: AppColors.deepPurple,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Icon(Icons.chevron_right_rounded, size: 16, color: AppColors.textDisabled),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-
-  // ── 5. Trending AYUSH Terminology Small Responsive Card Grid ─────
-  Widget _buildTrendingTerminologyGrid(BuildContext context, bool isDark) {
-    final trendingTerms = [
-      {'code': 'NA-01-01-001', 'name': 'Jwara', 'desc': 'Fever', 'system': 'Ayurveda'},
-      {'code': 'NS-01-01-001', 'name': 'Suram', 'desc': 'Fever & Chills', 'system': 'Siddha'},
-      {'code': 'NU-01-01-001', 'name': 'Humma', 'desc': 'Pyrexia', 'system': 'Unani'},
-      {'code': 'NA-01-02-003', 'name': 'Kasa', 'desc': 'Cough & Bronchitis', 'system': 'Ayurveda'},
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Trending AYUSH Terminology',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: AppColors.darkSlate,
-          ),
-        ),
-        const SizedBox(height: 10),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: 220,
-            mainAxisExtent: 80,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-          ),
-          itemCount: trendingTerms.length,
-          itemBuilder: (ctx, idx) {
-            final t = trendingTerms[idx];
-            return AucteMedicalCard(
-              onTap: () => context.push('/terminology/${t['code']}'),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: items.map((item) {
+          return Container(
+            margin: const EdgeInsets.only(right: 10),
+            width: 175,
+            child: AucteMedicalCard(
+              onTap: () => context.push('/terminology/${item['code']}'),
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
                   Container(
-                    width: 32,
-                    height: 32,
+                    padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: AppColors.deepPurple.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.local_hospital_rounded, size: 16, color: AppColors.deepPurple),
+                    child: const Icon(Icons.description_outlined, color: AppColors.deepPurple, size: 16),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          t['name']!,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.darkSlate),
+                          item['title']!,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.darkSlate),
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          '${t['system']} • ${t['desc']}',
+                          item['code']!,
                           style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
+                  const Icon(Icons.chevron_right_rounded, size: 16, color: AppColors.textDisabled),
                 ],
               ),
-            );
-          },
-        ),
-      ],
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
-  // ── 6. Lightweight Native Flutter Analytics Charts ────────────────
-  Widget _buildModule2ChartsSection(BuildContext context, bool isDark) {
-    return Column(
+  // ── 6. Analytics Section (Donut + Bar Chart) ─────────────────────
+  Widget _buildAnalyticsRow(BuildContext context, bool isDark) {
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Module 2 Clinical Search Analytics',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: AppColors.darkSlate,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Donut Chart: Searches by AYUSH System
-            Expanded(
-              child: AucteMedicalCard(
-                padding: const EdgeInsets.all(14),
-                child: Column(
+        // Donut Chart: Search Distribution
+        Expanded(
+          child: AucteMedicalCard(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Search Distribution', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.darkSlate)),
+                const SizedBox(height: 12),
+                Row(
                   children: [
-                    const Text(
-                      'Searches by AYUSH System',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.darkSlate),
-                    ),
-                    const SizedBox(height: 12),
                     SizedBox(
-                      height: 100,
+                      height: 74,
+                      width: 74,
                       child: CustomPaint(
-                        painter: _DonutChartPainter(),
+                        painter: _ReferenceDonutPainter(),
                         child: const Center(
-                          child: Text('85\nTerms', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: AppColors.deepPurple)),
+                          child: Text('15%', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9, color: AppColors.darkSlate)),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    const Text('Ayurveda 60% • Siddha 20% • Unani 20%', style: TextStyle(fontSize: 9, color: AppColors.textSecondary)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildLegendDot(AppColors.deepPurple, 'Ayurveda', '65%'),
+                          const SizedBox(height: 4),
+                          _buildLegendDot(AppColors.warning, 'Siddha', '20%'),
+                          const SizedBox(height: 4),
+                          _buildLegendDot(AppColors.medicalGreen, 'Unani', '15%'),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
+              ],
             ),
-            const SizedBox(width: 10),
+          ),
+        ),
+        const SizedBox(width: 10),
 
-            // Horizontal Bar Chart & Sparkline
-            Expanded(
-              child: AucteMedicalCard(
-                padding: const EdgeInsets.all(14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Top Searched Diseases',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.darkSlate),
-                    ),
-                    const SizedBox(height: 8),
-                    _buildBarRow('Jwara', 0.9, AppColors.deepPurple),
-                    _buildBarRow('Suram', 0.65, AppColors.warning),
-                    _buildBarRow('Kasa', 0.5, AppColors.medicalGreen),
-                    const SizedBox(height: 12),
-                    const Text('Weekly Search Activity Trend', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: AppColors.textSecondary)),
-                    const SizedBox(height: 4),
-                    SizedBox(
-                      height: 24,
-                      width: double.infinity,
-                      child: CustomPaint(painter: _SparklinePainter()),
-                    ),
-                  ],
-                ),
-              ),
+        // Horizontal Bar Chart: Top Searched Diseases
+        Expanded(
+          child: AucteMedicalCard(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Top Searched Diseases', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.darkSlate)),
+                const SizedBox(height: 8),
+                _buildBarItem('Jwara (Fever)', 1.0, 128, AppColors.deepPurple),
+                _buildBarItem('Kasa (Cough)', 0.75, 96, AppColors.warning),
+                _buildBarItem('Prameha', 0.56, 72, AppColors.medicalGreen),
+                _buildBarItem('Arsha (Piles)', 0.37, 48, const Color(0xFF2563EB)),
+                _buildBarItem('Vata Vyadhi', 0.28, 36, const Color(0xFFA855F7)),
+              ],
             ),
-          ],
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildBarRow(String label, double pct, Color col) {
+  Widget _buildLegendDot(Color color, String label, String pct) {
+    return Row(
+      children: [
+        Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: 4),
+        Expanded(child: Text(label, style: const TextStyle(fontSize: 10, color: AppColors.darkSlate, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis)),
+        Text(pct, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Widget _buildBarItem(String label, double pct, int count, Color color) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 42, child: Text(label, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.darkSlate))),
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: pct,
-                color: col,
-                backgroundColor: col.withValues(alpha: 0.15),
-                minHeight: 6,
-              ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(child: Text(label, style: const TextStyle(fontSize: 9, color: AppColors.darkSlate, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis)),
+              Text('$count', style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.darkSlate)),
+            ],
+          ),
+          const SizedBox(height: 2),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: pct,
+              minHeight: 4,
+              color: color,
+              backgroundColor: color.withValues(alpha: 0.12),
             ),
           ),
         ],
       ),
     );
   }
+
+  // ── 7. Today's Activity Card ──────────────────────────────────────
+  Widget _buildTodaysActivityCard(BuildContext context, bool isDark) {
+    return AucteMedicalCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text("Today's Activity", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.darkSlate)),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatItem(Icons.search_rounded, '24', 'Searches', AppColors.deepPurple, const Color(0xFFF3E8FF)),
+              _buildStatItem(Icons.account_tree_rounded, '18', 'Mappings', AppColors.warning, const Color(0xFFFFF3DC)),
+              _buildStatItem(Icons.code_rounded, '15', 'FHIR Resources', AppColors.medicalGreen, const Color(0xFFE6F4EA)),
+              _buildStatItem(Icons.layers_rounded, '12', 'Bundles', const Color(0xFF2563EB), const Color(0xFFE8F0FE)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(IconData icon, String val, String label, Color color, Color bg) {
+    return Column(
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
+          child: Icon(icon, color: color, size: 18),
+        ),
+        const SizedBox(height: 6),
+        Text(val, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppColors.darkSlate)),
+        Text(label, style: const TextStyle(fontSize: 10, color: AppColors.textSecondary, fontWeight: FontWeight.w500)),
+      ],
+    );
+  }
+
+  // ── 8. Recent Activity & 7-Day Search Trend Row ─────────────────
+  Widget _buildRecentActivityAndTrendRow(BuildContext context, bool isDark) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Recent Activity Timeline
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionHeader('Recent Activity', () => context.go('/terminology')),
+              const SizedBox(height: 8),
+              _buildTimelineItem(context, '09:15 AM', Icons.search_rounded, 'Searched "Jwara (Fever)"', 'NAMASTE: NA-01-01-001', AppColors.deepPurple),
+              _buildTimelineItem(context, '09:20 AM', Icons.account_tree_rounded, 'Mapped to TM2 Code', 'TM2: 120936000', AppColors.warning),
+              _buildTimelineItem(context, '09:23 AM', Icons.code_rounded, 'Generated FHIR Condition', 'Condition Resource Created', AppColors.medicalGreen),
+              _buildTimelineItem(context, '09:25 AM', Icons.layers_rounded, 'Generated FHIR Bundle', 'Bundle ID: BND-2025-08-01-001', const Color(0xFF2563EB)),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+
+        // Search Trend (7 Days) Graph Card
+        Expanded(
+          child: AucteMedicalCard(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Search Trend (7 Days)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.darkSlate)),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 110,
+                  width: double.infinity,
+                  child: CustomPaint(painter: _SearchTrendSparklinePainter()),
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text('26 Jul', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
+                    Text('29 Jul', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
+                    Text('01 Aug', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTimelineItem(BuildContext context, String time, IconData icon, String title, String sub, Color col) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      child: AucteMedicalCard(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        onTap: () => context.go('/terminology'),
+        child: Row(
+          children: [
+            Text(time, style: const TextStyle(fontSize: 9, color: AppColors.textSecondary, fontWeight: FontWeight.bold)),
+            const SizedBox(width: 6),
+            Icon(icon, size: 14, color: col),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: AppColors.darkSlate), overflow: TextOverflow.ellipsis),
+                  Text(sub, style: const TextStyle(fontSize: 8, color: AppColors.textSecondary), overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, size: 14, color: AppColors.textDisabled),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, VoidCallback? onViewAll) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.darkSlate),
+        ),
+        if (onViewAll != null)
+          InkWell(
+            onTap: onViewAll,
+            child: const Text(
+              'View all',
+              style: TextStyle(color: AppColors.deepPurple, fontWeight: FontWeight.bold, fontSize: 11),
+            ),
+          ),
+      ],
+    );
+  }
 }
 
-// ── Lightweight Custom Donut Chart Painter ──────────────────────────
-class _DonutChartPainter extends CustomPainter {
+// ── Donut Chart Custom Painter ──────────────────────────────────────
+class _ReferenceDonutPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = math.min(size.width, size.height) / 2 - 4;
-    final strokeWidth = 14.0;
+    final radius = size.width / 2 - 4;
+    const strokeWidth = 12.0;
 
     final paint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.round;
+      ..strokeWidth = strokeWidth;
 
     double startAngle = -math.pi / 2;
 
-    // Segment 1: Ayurveda (60%)
+    // Ayurveda 65%
     paint.color = AppColors.deepPurple;
-    final sweep1 = 2 * math.pi * 0.60;
+    final sweep1 = 2 * math.pi * 0.65;
     canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep1 - 0.05, false, paint);
     startAngle += sweep1;
 
-    // Segment 2: Siddha (20%)
+    // Siddha 20%
     paint.color = AppColors.warning;
     final sweep2 = 2 * math.pi * 0.20;
     canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep2 - 0.05, false, paint);
     startAngle += sweep2;
 
-    // Segment 3: Unani (20%)
+    // Unani 15%
     paint.color = AppColors.medicalGreen;
-    final sweep3 = 2 * math.pi * 0.20;
+    final sweep3 = 2 * math.pi * 0.15;
     canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep3 - 0.05, false, paint);
   }
 
@@ -658,32 +696,60 @@ class _DonutChartPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-// ── Lightweight Custom Sparkline Painter ────────────────────────────
-class _SparklinePainter extends CustomPainter {
+// ── Search Trend Sparkline Custom Painter ──────────────────────────
+class _SearchTrendSparklinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final points = [
-      Offset(0, size.height * 0.7),
-      Offset(size.width * 0.2, size.height * 0.4),
-      Offset(size.width * 0.4, size.height * 0.6),
-      Offset(size.width * 0.6, size.height * 0.2),
-      Offset(size.width * 0.8, size.height * 0.5),
-      Offset(size.width, size.height * 0.1),
+      Offset(0, size.height * 0.65),
+      Offset(size.width * 0.16, size.height * 0.50),
+      Offset(size.width * 0.33, size.height * 0.60),
+      Offset(size.width * 0.50, size.height * 0.15),
+      Offset(size.width * 0.66, size.height * 0.45),
+      Offset(size.width * 0.83, size.height * 0.75),
+      Offset(size.width, size.height * 0.35),
     ];
 
-    final path = Path();
-    path.moveTo(points[0].dx, points[0].dy);
+    final path = Path()..moveTo(points[0].dx, points[0].dy);
     for (int i = 1; i < points.length; i++) {
       path.lineTo(points[i].dx, points[i].dy);
     }
 
-    final paint = Paint()
+    final fillPath = Path.from(path)
+      ..lineTo(size.width, size.height)
+      ..lineTo(0, size.height)
+      ..close();
+
+    final fillGradient = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        AppColors.deepPurple.withValues(alpha: 0.35),
+        AppColors.deepPurple.withValues(alpha: 0.02),
+      ],
+    );
+
+    canvas.drawPath(
+      fillPath,
+      Paint()
+        ..shader = fillGradient.createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+        ..style = PaintingStyle.fill,
+    );
+
+    final linePaint = Paint()
       ..color = AppColors.deepPurple
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..strokeCap = StrokeCap.round;
+      ..strokeWidth = 2.0;
 
-    canvas.drawPath(path, paint);
+    canvas.drawPath(path, linePaint);
+
+    final dotPaint = Paint()..color = AppColors.deepPurple;
+    final dotWhitePaint = Paint()..color = Colors.white;
+
+    for (final p in points) {
+      canvas.drawCircle(p, 3.5, dotPaint);
+      canvas.drawCircle(p, 1.8, dotWhitePaint);
+    }
   }
 
   @override

@@ -1,4 +1,4 @@
-/// AUCTE — Streamlined Workflow Navigation Shell.
+/// AUCTE — Reference Matching Bottom Navigation Bar.
 library;
 
 import 'package:flutter/material.dart';
@@ -21,23 +21,23 @@ class AppBottomNav extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(
-        left: 12,
-        right: 12,
-        bottom: 16,
+        left: 16,
+        right: 16,
+        bottom: 20,
       ),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? AppColors.surfaceDark : Colors.white,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.1)
-              : AppColors.borderLight,
+              : AppColors.borderLight.withValues(alpha: 0.6),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 16,
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 20,
             offset: const Offset(0, 4),
           ),
         ],
@@ -45,13 +45,13 @@ class AppBottomNav extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _NavItem(
-                icon: Icons.space_dashboard_outlined,
-                selectedIcon: Icons.space_dashboard_rounded,
+                icon: Icons.home_rounded,
+                selectedIcon: Icons.home_rounded,
                 label: 'Workspace',
                 isSelected: currentIndex == 0,
                 onTap: () => onTap(0),
@@ -59,36 +59,29 @@ class AppBottomNav extends StatelessWidget {
               _NavItem(
                 icon: Icons.search_rounded,
                 selectedIcon: Icons.search_rounded,
-                label: 'Terminology',
+                label: 'Search',
                 isSelected: currentIndex == 1,
                 onTap: () => onTap(1),
               ),
               _NavItem(
-                icon: Icons.account_tree_outlined,
-                selectedIcon: Icons.account_tree_rounded,
-                label: 'Mappings',
+                icon: Icons.access_time_rounded,
+                selectedIcon: Icons.access_time_filled_rounded,
+                label: 'Recent',
                 isSelected: currentIndex == 2,
                 onTap: () => onTap(2),
               ),
               _NavItem(
-                icon: Icons.inventory_2_outlined,
-                selectedIcon: Icons.inventory_2_rounded,
-                label: 'FHIR',
+                icon: Icons.star_outline_rounded,
+                selectedIcon: Icons.star_rounded,
+                label: 'Favorites',
                 isSelected: currentIndex == 3,
                 onTap: () => onTap(3),
               ),
               _NavItem(
-                icon: Icons.cloud_upload_outlined,
-                selectedIcon: Icons.cloud_upload_rounded,
-                label: 'Integration',
-                isSelected: currentIndex == 4,
-                onTap: () => onTap(4),
-              ),
-              _NavItem(
-                icon: Icons.person_outline,
+                icon: Icons.person_outline_rounded,
                 selectedIcon: Icons.person_rounded,
                 label: 'Profile',
-                isSelected: currentIndex == 5,
+                isSelected: currentIndex == 4 || currentIndex == 5,
                 onTap: () => onTap(5),
               ),
             ],
@@ -116,47 +109,39 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
         padding: EdgeInsets.symmetric(
-          horizontal: isSelected ? 10.0 : 6.0,
-          vertical: 6.0,
+          horizontal: isSelected ? 12.0 : 8.0,
+          vertical: 8.0,
         ),
         decoration: BoxDecoration(
           color: isSelected
-              ? (isDark
-                  ? AppColors.darkOrange.withValues(alpha: 0.25)
-                  : AppColors.primaryLight)
+              ? AppColors.deepPurple.withValues(alpha: 0.12)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: Row(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               isSelected ? selectedIcon : icon,
-              color: isSelected
-                  ? AppColors.darkOrange
-                  : (isDark ? AppColors.textDisabled : AppColors.textSecondary),
-              size: 18,
+              color: isSelected ? AppColors.deepPurple : const Color(0xFF64748B),
+              size: 22,
             ),
-            if (isSelected) ...[
-              const SizedBox(width: 4),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AppColors.darkOrange,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 10,
-                    ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? AppColors.deepPurple : const Color(0xFF64748B),
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontSize: 10,
               ),
-            ],
+            ),
           ],
         ),
       ),
