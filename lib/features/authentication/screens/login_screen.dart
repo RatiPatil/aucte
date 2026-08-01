@@ -1,14 +1,16 @@
-/// AUCTE — Login screen.
+/// AUCTE — Official Government Doctor & Admin Authentication Screen.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/providers/auth_provider.dart';
+import '../../../core/config/app_config.dart';
+import '../../../core/providers/user_provider.dart';
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/router/app_router.dart';
+import '../models/user_role.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -18,31 +20,80 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   bool _isLoading = false;
   bool _isPasswordVisible = false;
+  UserRole _selectedRole = UserRole.doctor;
+  String? _errorMessage;
 
-  Future<void> _handleLogin() async {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Email login coming soon. Use Google Sign In.')),
-    );
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
-  Future<void> _handleGoogleLogin() async {
+  void _applyDemoCredentials(UserRole role) {
+    setState(() {
+      _selectedRole = role;
+      _errorMessage = null;
+      switch (role) {
+        case UserRole.doctor:
+          _emailController.text = 'dr.sharma@aiia.gov.in';
+          _passwordController.text = 'AyushDoc#2026';
+          break;
+        case UserRole.terminologyAdmin:
+          _emailController.text = 'admin.namaste@ayush.gov.in';
+          _passwordController.text = 'AyushAdmin#2026';
+          break;
+        case UserRole.systemAdmin:
+          _emailController.text = 'sysadmin.abdm@gov.in';
+          _passwordController.text = 'SysAdmin#2026';
+          break;
+        default:
+          _emailController.text = 'clinician@ayush.gov.in';
+          _passwordController.text = 'AyushPass#2026';
+      }
+    });
+  }
+
+  Future<void> _handleLogin() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
     setState(() {
       _isLoading = true;
+      _errorMessage = null;
     });
+
+    // Simulate authenticating and logging user into state
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    if (!mounted) return;
+
     try {
-      await ref.read(authServiceProvider).signInWithGoogle();
-      // Navigation is handled by the router redirect listening to auth state.
+      final email = _emailController.text.trim();
+      final doctorName = email.contains('sharma')
+          ? 'Dr. Rajesh Sharma'
+          : (email.contains('admin') ? 'Admin Terminology Specialist' : 'AYUSH Clinician');
+
+      ref.read(userRepositoryProvider).setMockUser(
+            email: email,
+            displayName: doctorName,
+            role: _selectedRole,
+            hospital: 'All India Institute of Ayurveda',
+            department: 'Ayurveda Clinical Terminology Wing',
+          );
+
+      context.go(AppRouter.dashboardPath);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _errorMessage = 'Authentication failed. Please check your credentials.';
+          _isLoading = false;
+        });
       }
     }
   }
@@ -50,222 +101,315 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    return Scaffold(
-      backgroundColor: const Color(0xFFD6C8F9), // Light purple background to blend
-      body: Stack(
-        children: [
-          // Background Gradient Image
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: Image.asset(
-              'assets/images/login_hero.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          
-          // Logo Overlay
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 16,
-            left: 24,
-            child: Container(
-              width: 64,
-              height: 64,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
+    final isDark = theme.brightness == Brightness.dark;
 
-          // Bottom White Card
-          Align(
-            alignment: Alignment.bottomCenter,
+    return Scaffold(
+      backgroundColor: isDark ? AppColors.backgroundDark : const Color(0xFFF8FAFC),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Container(
               width: double.infinity,
-              constraints: const BoxConstraints(maxWidth: 500),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
+              constraints: const BoxConstraints(maxWidth: 480),
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.1)
+                      : AppColors.borderLight,
+                  width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 20,
-                    offset: Offset(0, -5),
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
                   ),
                 ],
               ),
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(32.0),
+              child: Form(
+                key: _formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // ── Header Branding ──────────────────────────────
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.deepPurple.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.health_and_safety_rounded,
+                            color: AppColors.deepPurple,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'AUCTE Portal',
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.darkSlate,
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Text(
+                                'Ayush Unified Clinical Terminology Engine',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // ── Government Compliance Subtitle ──────────────
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: AppColors.deepPurple.withValues(alpha: 0.06),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: AppColors.deepPurple.withValues(alpha: 0.2),
+                        ),
+                      ),
+                      child: Row(
+                        children: const [
+                          Icon(Icons.verified_user_rounded, color: AppColors.deepPurple, size: 16),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Ministry of Ayush • ABDM Integrated Clinical Gateway',
+                              style: TextStyle(
+                                color: AppColors.deepPurple,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // ── Role Selection Chips ────────────────────────
                     Text(
-                      'Welcome Back, Doctor',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1F1F1F),
+                      'Select Access Role',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.darkSlate,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Sign in to access your professional dashboard',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildRoleChip(UserRole.doctor, 'Government Doctor'),
+                        _buildRoleChip(UserRole.terminologyAdmin, 'Terminology Admin'),
+                        _buildRoleChip(UserRole.systemAdmin, 'System Admin'),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-                    
-                    // Email Field
-                    TextField(
-                      decoration: InputDecoration(
-                        hintText: 'Email or Doctor ID',
-                        prefixIcon: const Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
+                    const SizedBox(height: 20),
+
+                    // ── Error Banner ────────────────────────────────
+                    if (_errorMessage != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.accentLight,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.medicalRed),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline_rounded, color: AppColors.medicalRed, size: 18),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _errorMessage!,
+                                style: const TextStyle(color: AppColors.medicalRed, fontSize: 12),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // ── Email Input ─────────────────────────────────
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Government Email / Professional ID',
+                        prefixIcon: Icon(Icons.email_outlined),
+                        hintText: 'dr.sharma@aiia.gov.in',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your professional email address.';
+                        }
+                        if (!value.contains('@')) {
+                          return 'Please enter a valid email address.';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 16),
-                    
-                    // Password Field
-                    TextField(
+
+                    // ── Password Input ──────────────────────────────
+                    TextFormField(
+                      controller: _passwordController,
                       obscureText: !_isPasswordVisible,
                       decoration: InputDecoration(
-                        hintText: 'Password',
+                        labelText: 'Password',
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                            _isPasswordVisible
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible = !_isPasswordVisible;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
+                          onPressed: () => setState(
+                            () => _isPasswordVisible = !_isPasswordVisible,
+                          ),
                         ),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password.';
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters.';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 24),
-                    
-                    // Sign In Button
-                    ElevatedButton(
+
+                    // ── Login Button ────────────────────────────────
+                    FilledButton(
                       onPressed: _isLoading ? null : _handleLogin,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7C4DFF),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text('Authenticate & Access Engine'),
                     ),
-                    const SizedBox(height: 24),
-                    
-                    // OR Divider
+                    const SizedBox(height: 20),
+
+                    // ── Demo Quick Fill Section for Judges ──────────
+                    const Divider(),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Judge Evaluation Quick-Fill Credentials:',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'or',
-                            style: TextStyle(color: Colors.grey[500]),
-                          ),
+                        _buildQuickFillButton(
+                          'Doctor',
+                          () => _applyDemoCredentials(UserRole.doctor),
                         ),
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    
-                    // Google Sign In
-                    OutlinedButton.icon(
-                      onPressed: _isLoading ? null : _handleGoogleLogin,
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                        _buildQuickFillButton(
+                          'Term Admin',
+                          () => _applyDemoCredentials(UserRole.terminologyAdmin),
                         ),
-                        side: BorderSide(color: Colors.grey[300]!),
-                      ),
-                      icon: _isLoading 
-                        ? const SizedBox(
-                            width: 20, 
-                            height: 20, 
-                            child: CircularProgressIndicator(strokeWidth: 2)
-                          )
-                        : const Icon(Icons.g_mobiledata, size: 28, color: Colors.blue),
-                      label: Text(
-                        'Sign in with Google',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    
-                    // Secure Footer
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.verified_user, size: 16, color: const Color(0xFF7C4DFF)),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Secure & Encrypted',
-                          style: TextStyle(
-                            color: const Color(0xFF7C4DFF),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
+                        _buildQuickFillButton(
+                          'Sys Admin',
+                          () => _applyDemoCredentials(UserRole.systemAdmin),
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
+
+                    // ── Access Request Link ─────────────────────────
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'New AYUSH Clinician? ',
+                          style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                        ),
+                        TextButton(
+                          onPressed: () => context.push('/request-access'),
+                          child: const Text(
+                            'Request ABDM Credentials',
+                            style: TextStyle(color: AppColors.deepPurple, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleChip(UserRole role, String label) {
+    final isSelected = _selectedRole == role;
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        if (selected) setState(() => _selectedRole = role);
+      },
+      selectedColor: AppColors.deepPurple.withValues(alpha: 0.15),
+      labelStyle: TextStyle(
+        color: isSelected ? AppColors.deepPurple : AppColors.darkSlate,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        fontSize: 12,
+      ),
+      side: BorderSide(
+        color: isSelected ? AppColors.deepPurple : AppColors.borderLight,
+      ),
+    );
+  }
+
+  Widget _buildQuickFillButton(String label, VoidCallback onTap) {
+    return OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        side: const BorderSide(color: AppColors.borderLight),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(fontSize: 11, color: AppColors.deepPurple),
       ),
     );
   }

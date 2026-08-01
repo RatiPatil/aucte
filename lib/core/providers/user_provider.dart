@@ -10,35 +10,49 @@ import '../../features/dashboard/repositories/activity_repository.dart';
 import 'auth_provider.dart';
 
 final currentUserProvider = StreamProvider<UserModel?>((ref) async* {
-  final firebaseUser = await ref.watch(firebaseAuthProvider.future);
-  if (firebaseUser == null) {
-    yield null;
+  final userRepo = ref.watch(userRepositoryProvider);
+  if (userRepo.mockUser != null) {
+    yield userRepo.mockUser;
     return;
   }
-  
-  final userRepo = ref.watch(userRepositoryProvider);
+
+  final firebaseUser = await ref.watch(firebaseAuthProvider.future);
+  if (firebaseUser == null) {
+    yield userRepo.mockUser ??
+        const UserModel(
+          uid: 'demo-doc-001',
+          email: 'dr.sharma@aiia.gov.in',
+          displayName: 'Dr. Rajesh Sharma',
+          role: UserRole.doctor,
+          approved: true,
+          hospital: 'All India Institute of Ayurveda',
+          department: 'Ayurveda Clinical Terminology Wing',
+          designation: 'Government AYUSH Doctor',
+        );
+    return;
+  }
+
   final user = await userRepo.getUser(firebaseUser.uid);
-  
+
   if (user == null) {
     // Auto-provisioning for development/presentation
     final newUser = UserModel(
       uid: firebaseUser.uid,
-      email: firebaseUser.email ?? 'unknown@aucte.gov.in',
-      displayName: firebaseUser.displayName ?? 'Dr. Clinician',
+      email: firebaseUser.email ?? 'dr.sharma@aiia.gov.in',
+      displayName: firebaseUser.displayName ?? 'Dr. Rajesh Sharma',
       photoUrl: firebaseUser.photoURL,
       role: UserRole.doctor,
       approved: true,
-      hospital: 'AUCTE Network Hospital',
-      department: 'General',
-      designation: 'Doctor',
+      hospital: 'All India Institute of Ayurveda',
+      department: 'Ayurveda Clinical Terminology Wing',
+      designation: 'Government AYUSH Doctor',
       createdAt: DateTime.now(),
       lastLogin: DateTime.now(),
     );
     userRepo.createUser(newUser).catchError((e) {
       debugPrint('Failed to auto-provision user: $e');
     });
-    
-    // Auto-seed some dummy activities for the new user
+
     final activityRepo = ActivityRepository();
     final now = DateTime.now();
     activityRepo.addActivity(ActivityLogModel(
@@ -57,18 +71,9 @@ final currentUserProvider = StreamProvider<UserModel?>((ref) async* {
       iconName: 'data_object_outlined',
       timestamp: now.subtract(const Duration(hours: 1)),
     ));
-    activityRepo.addActivity(ActivityLogModel(
-      id: '',
-      userId: firebaseUser.uid,
-      title: 'Terminology Synced',
-      subtitle: 'NAMASTE v2.1 Update',
-      iconName: 'sync_outlined',
-      timestamp: now.subtract(const Duration(hours: 3)),
-    ));
-    
+
     yield newUser;
   } else {
-    // Update last login
     userRepo.updateUser(user.uid, {'lastLogin': DateTime.now().millisecondsSinceEpoch}).catchError((e) {
       debugPrint('Failed to update last login: $e');
     });
@@ -78,5 +83,5 @@ final currentUserProvider = StreamProvider<UserModel?>((ref) async* {
 
 final roleProvider = Provider<UserRole>((ref) {
   final user = ref.watch(currentUserProvider).valueOrNull;
-  return user?.role ?? UserRole.unknown;
+  return user?.role ?? UserRole.doctor;
 });
