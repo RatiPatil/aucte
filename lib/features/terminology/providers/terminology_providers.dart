@@ -1,7 +1,6 @@
 /// AUCTE — Terminology Providers.
 library;
 
-import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/shared_prefs_provider.dart';
 import '../models/namaste_code_model.dart';
@@ -20,15 +19,6 @@ final terminologyServiceProvider = Provider<TerminologyService>((ref) {
 
 final terminologySearchQueryProvider = StateProvider<String>((ref) => '');
 
-/// Debounces the search query by 500ms
-final _debouncedSearchQueryProvider = Provider<String>((ref) {
-  final query = ref.watch(terminologySearchQueryProvider);
-  return query; 
-  // Riverpod 2.x doesn't have an easy debounce in providers directly without 
-  // hooks or Future.delayed. We will debounce it by reading it with a delay 
-  // inside the FutureProvider below.
-});
-
 final terminologySearchResultsProvider = FutureProvider.autoDispose<List<NamasteCodeModel>>((ref) async {
   final query = ref.watch(terminologySearchQueryProvider);
   
@@ -36,9 +26,7 @@ final terminologySearchResultsProvider = FutureProvider.autoDispose<List<Namaste
     return [];
   }
 
-  // Debounce for 300ms
-  // If the query changes, this provider will be disposed and recreated.
-  // Delaying here achieves a simple debounce effect.
+  // 300ms Typing Debounce
   var didDispose = false;
   ref.onDispose(() => didDispose = true);
   await Future.delayed(const Duration(milliseconds: 300));
