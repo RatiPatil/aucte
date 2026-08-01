@@ -1,11 +1,10 @@
-/// AUCTE — Spotlight Terminology Search Screen.
+/// AUCTE — Spotlight Terminology Search & System Filter Screen.
 library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/aucte_medical_card.dart';
@@ -24,6 +23,28 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  String _selectedSystem = 'All Systems';
+  String _selectedCategory = 'All Categories';
+
+  final List<String> _systems = const [
+    'All Systems',
+    'Ayurveda',
+    'Siddha',
+    'Unani',
+    'Homeopathy',
+    'Yoga & Naturopathy',
+  ];
+
+  final List<String> _categories = const [
+    'All Categories',
+    'Kaya Chikitsa',
+    'Pranavaha Srotas',
+    'Annavaha Srotas',
+    'Shalya Tantra',
+    'Kaumarbhritya',
+    'Body System',
+  ];
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -40,7 +61,7 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search NAMASTE'),
+        title: const Text('Search NAMASTE Terminology'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
@@ -52,14 +73,32 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Spotlight Search Input Bar ───────────────────────────
+            // ── 1. Spotlight Search Input Bar ─────────────────────────
             _buildSpotlightInputBar(context, searchQuery),
+            const SizedBox(height: 12),
+
+            // ── 2. AYUSH System Filter Chips ──────────────────────────
+            _buildSystemFilterChips(),
+            const SizedBox(height: 8),
+
+            // ── 3. Category & Body System Filter Chips ────────────────
+            _buildCategoryFilterChips(),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Results Feed OR Suggestion Dashboard ────────────────
+            // ── 4. Results Feed OR Suggestion Dashboard ──────────────
             if (searchQuery.isNotEmpty)
               searchResultsAsync.when(
-                data: (results) => _buildSearchResultsList(context, searchQuery, results),
+                data: (results) {
+                  final filtered = results.where((term) {
+                    final matchesSystem = _selectedSystem == 'All Systems' ||
+                        term.system.toLowerCase() == _selectedSystem.toLowerCase();
+                    final matchesCategory = _selectedCategory == 'All Categories' ||
+                        term.category.toLowerCase().contains(_selectedCategory.toLowerCase());
+                    return matchesSystem && matchesCategory;
+                  }).toList();
+
+                  return _buildSearchResultsList(context, searchQuery, filtered);
+                },
                 loading: () => const Center(
                   child: Padding(
                     padding: EdgeInsets.all(AppSpacing.xxl),
@@ -69,7 +108,7 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
                 error: (e, _) => Center(
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.xl),
-                    child: Text('Search error: $e', style: const TextStyle(color: AppColors.error)),
+                    child: Text('Search error: $e', style: const TextStyle(color: AppColors.medicalRed)),
                   ),
                 ),
               )
@@ -98,9 +137,9 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: _focusNode.hasFocus ? AppColors.darkOrange : AppColors.borderLight,
+          color: _focusNode.hasFocus ? AppColors.deepPurple : AppColors.borderLight,
           width: _focusNode.hasFocus ? 1.5 : 1,
         ),
       ),
@@ -113,7 +152,7 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
         },
         decoration: InputDecoration(
           hintText: 'Search disease name or NAMASTE code...',
-          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.darkOrange),
+          prefixIcon: const Icon(Icons.search_rounded, color: AppColors.deepPurple),
           suffixIcon: currentQuery.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear_rounded),
@@ -128,6 +167,66 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
           focusedBorder: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSystemFilterChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: _systems.map((sys) {
+          final isSelected = _selectedSystem == sys;
+          return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: ChoiceChip(
+              label: Text(sys),
+              selected: isSelected,
+              onSelected: (selected) {
+                if (selected) setState(() => _selectedSystem = sys);
+              },
+              selectedColor: AppColors.deepPurple.withValues(alpha: 0.15),
+              labelStyle: TextStyle(
+                color: isSelected ? AppColors.deepPurple : AppColors.darkSlate,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 11,
+              ),
+              side: BorderSide(
+                color: isSelected ? AppColors.deepPurple : AppColors.borderLight,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildCategoryFilterChips() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: _categories.map((cat) {
+          final isSelected = _selectedCategory == cat;
+          return Padding(
+            padding: const EdgeInsets.only(right: 6),
+            child: ChoiceChip(
+              label: Text(cat),
+              selected: isSelected,
+              onSelected: (selected) {
+                if (selected) setState(() => _selectedCategory = cat);
+              },
+              selectedColor: AppColors.warning.withValues(alpha: 0.15),
+              labelStyle: TextStyle(
+                color: isSelected ? AppColors.warning : AppColors.textSecondary,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 11,
+              ),
+              side: BorderSide(
+                color: isSelected ? AppColors.warning : AppColors.borderLight,
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -154,7 +253,7 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
-              'Try searching "Jwara", "Kasa", "Prameha", "Siddha", or "Unani".',
+              'Try adjusting your system filter or search query.',
               style: theme.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
@@ -178,98 +277,62 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
     String query,
     NamasteCodeModel term,
   ) {
-    final theme = Theme.of(context);
-
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       child: AucteMedicalCard(
         onTap: () {
           ref.read(recentSearchesProvider.notifier).addRecentSearch(term);
-          context.goNamed(
-            AppRouter.terminologyDetail,
-            pathParameters: {'code': term.code},
-          );
+          context.push('/terminology/${term.code}');
         },
-        padding: const EdgeInsets.all(14),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.darkOrange.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.deepPurple.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.medical_services_outlined, color: AppColors.darkOrange, size: 18),
+              child: const Icon(Icons.medical_services_outlined, color: AppColors.deepPurple, size: 20),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Text(
-                        term.code,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppColors.darkOrange,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.darkSlate.withValues(alpha: 0.08),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          term.system,
-                          style: theme.textTheme.labelSmall?.copyWith(fontSize: 9),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
                   Text(
-                    term.name,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.darkSlate,
-                    ),
+                    '${term.name} (${term.code})',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.darkSlate),
                   ),
                   Text(
-                    term.category,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                    'System: ${term.system} • Category: ${term.category}',
+                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textDisabled),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.textDisabled),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildRecentSearchesChips(BuildContext context, List<NamasteCodeModel> recent) {
+  Widget _buildRecentSearchesChips(
+    BuildContext context,
+    List<NamasteCodeModel> recent,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AucteSectionHeader(title: 'Recent Searches'),
         const SizedBox(height: AppSpacing.xs),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: recent.map((term) {
+          spacing: AppSpacing.xs,
+          children: recent.map((item) {
             return ActionChip(
-              avatar: const Icon(Icons.history_rounded, size: 14, color: AppColors.darkOrange),
-              label: Text('${term.name} (${term.code})'),
-              onPressed: () {
-                _searchController.text = term.name;
-                ref.read(terminologySearchQueryProvider.notifier).state = term.name;
-              },
+              avatar: const Icon(Icons.history_rounded, size: 14, color: AppColors.deepPurple),
+              label: Text('${item.name} (${item.code})'),
+              onPressed: () => context.push('/terminology/${item.code}'),
             );
           }).toList(),
         ),
@@ -277,46 +340,12 @@ class _TerminologySearchScreenState extends ConsumerState<TerminologySearchScree
     );
   }
 
-  Widget _buildPopularTermsList(BuildContext context, List<NamasteCodeModel> popular) {
+  Widget _buildPopularTermsList(
+    BuildContext context,
+    List<NamasteCodeModel> popular,
+  ) {
     return Column(
-      children: popular.map((term) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: AucteMedicalCard(
-            onTap: () {
-              context.goNamed(
-                AppRouter.terminologyDetail,
-                pathParameters: {'code': term.code},
-              );
-            },
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      term.name,
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.darkSlate,
-                          ),
-                    ),
-                    Text(
-                      '${term.code} • ${term.system}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                    ),
-                  ],
-                ),
-                const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textDisabled),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
+      children: popular.map((term) => _buildResultItem(context, '', term)).toList(),
     );
   }
 }
