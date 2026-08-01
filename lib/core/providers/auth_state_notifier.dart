@@ -8,7 +8,7 @@ import 'user_provider.dart';
 enum AppAuthState {
   loading,
   unauthenticated,
-  authenticatedUnknown, // Logged into Google, but no Firestore document
+  authenticatedUnknown, // Logged into Firebase, but no Firestore document
   authenticatedPending, // Firestore doc exists but approved == false
   authenticatedAndApproved,
 }

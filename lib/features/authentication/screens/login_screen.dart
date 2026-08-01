@@ -10,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../models/user_model.dart';
 import '../models/user_role.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -67,34 +68,54 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
 
-      // Try Firebase Auth login with fallback for offline judge evaluation
-      try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-      } catch (firebaseErr) {
-        debugPrint('[AUCTE Auth] Firebase auth offline fallback: $firebaseErr');
-      }
+      debugPrint('[AUTH] Attempting FirebaseAuth signInWithEmailAndPassword for $email');
+      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      final doctorName = email.contains('sharma')
-          ? 'Dr. Rajesh Sharma'
-          : (email.contains('admin') ? 'Admin Terminology Specialist' : 'Dr. Ratikant');
+      final user = credential.user;
+      if (user != null) {
+        debugPrint('[AUTH] Firebase auth succeeded for UID: ${user.uid}');
+        final userRepo = ref.read(userRepositoryProvider);
+        final profile = await userRepo.getUser(user.uid);
 
-      ref.read(userRepositoryProvider).setMockUser(
+        if (profile == null) {
+          debugPrint('[AUTH] Provisioning new doctor profile in Firestore for ${user.uid}');
+          final newProfile = UserModel(
+            uid: user.uid,
             email: email,
-            displayName: doctorName,
+            displayName: user.displayName ?? 'Dr. Ratikant',
             role: email.contains('admin') ? UserRole.terminologyAdmin : UserRole.doctor,
+            approved: true,
             hospital: 'All India Institute of Ayurveda',
             department: 'AYUSH Clinical Terminology Wing',
+            designation: 'Government AYUSH Doctor',
+            createdAt: DateTime.now(),
+            lastLogin: DateTime.now(),
           );
-
-      if (!mounted) return;
-      context.go(AppRouter.dashboardPath);
-    } catch (e) {
+          await userRepo.createUser(newProfile);
+        }
+      }
+    } on FirebaseAuthException catch (e) {
+      debugPrint('[AUTH] FirebaseAuthException: ${e.code} - ${e.message}');
       if (mounted) {
         setState(() {
-          _errorMessage = 'Incorrect email address or password.';
+          if (e.code == 'user-not-found' || e.code == 'wrong-password' || e.code == 'invalid-credential') {
+            _errorMessage = 'Incorrect email address or password.';
+          } else if (e.code == 'network-request-failed') {
+            _errorMessage = 'Unable to connect. Check your internet connection.';
+          } else {
+            _errorMessage = 'Authentication failed: ${e.message}';
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('[AUTH] Unexpected auth error: $e');
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Authentication failed. Please check your credentials.';
           _isLoading = false;
         });
       }
@@ -107,19 +128,44 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
       _errorMessage = null;
     });
 
-    await Future.delayed(const Duration(milliseconds: 600));
+    try {
+      debugPrint('[AUTH] Attempting GoogleAuthProvider sign in');
+      final googleProvider = GoogleAuthProvider();
+      final credential = await FirebaseAuth.instance.signInWithPopup(googleProvider);
+      final user = credential.user;
 
-    if (!mounted) return;
+      if (user != null) {
+        debugPrint('[AUTH] Google auth succeeded for UID: ${user.uid}');
+        final userRepo = ref.read(userRepositoryProvider);
+        final profile = await userRepo.getUser(user.uid);
 
-    ref.read(userRepositoryProvider).setMockUser(
-          email: 'dr.ratikant@ayush.gov.in',
-          displayName: 'Dr. Ratikant',
-          role: UserRole.doctor,
-          hospital: 'All India Institute of Ayurveda',
-          department: 'AYUSH Clinical Interoperability Wing',
-        );
-
-    context.go(AppRouter.dashboardPath);
+        if (profile == null) {
+          debugPrint('[AUTH] Provisioning new Google user profile in Firestore');
+          final newProfile = UserModel(
+            uid: user.uid,
+            email: user.email ?? 'dr.ratikant@ayush.gov.in',
+            displayName: user.displayName ?? 'Dr. Ratikant',
+            photoUrl: user.photoURL,
+            role: UserRole.doctor,
+            approved: true,
+            hospital: 'All India Institute of Ayurveda',
+            department: 'AYUSH Clinical Interoperability Wing',
+            designation: 'Government AYUSH Doctor',
+            createdAt: DateTime.now(),
+            lastLogin: DateTime.now(),
+          );
+          await userRepo.createUser(newProfile);
+        }
+      }
+    } catch (e) {
+      debugPrint('[AUTH] Google login error: $e');
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Google Sign-In cancelled or unavailable.';
+          _isGoogleLoading = false;
+        });
+      }
+    }
   }
 
   void _showForgotPasswordDialog() {
@@ -588,7 +634,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> with SingleTickerProv
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        // Lavender decorative shape at the bottom
         Container(
           width: double.infinity,
           height: 90,
@@ -654,7 +699,6 @@ class _HealthcareInteroperabilityIllustration extends StatelessWidget {
         painter: _IllustrationPainter(),
         child: Stack(
           children: [
-            // Left Doctor Icon
             Positioned(
               left: 14,
               bottom: 18,
@@ -673,13 +717,11 @@ class _HealthcareInteroperabilityIllustration extends StatelessWidget {
                 ],
               ),
             ),
-            // Top Left: AYUSH Systems Node
             Positioned(
               left: 70,
               top: 14,
               child: _buildNodeBadge(Icons.eco_rounded, 'AYUSH\nSystems'),
             ),
-            // Center: FHIR Cloud Node
             Positioned(
               left: 0,
               right: 0,
@@ -706,19 +748,16 @@ class _HealthcareInteroperabilityIllustration extends StatelessWidget {
                 ),
               ),
             ),
-            // Top Right: Clinical Terminology Node
             Positioned(
               right: 70,
               top: 14,
               child: _buildNodeBadge(Icons.menu_book_rounded, 'Clinical\nTerminology'),
             ),
-            // Bottom Left: Interoperability Node
             Positioned(
               left: 100,
               bottom: 14,
               child: _buildNodeBadge(Icons.account_tree_rounded, 'Interoperability'),
             ),
-            // Bottom Right: Standardized Healthcare Node
             Positioned(
               right: 100,
               bottom: 14,
