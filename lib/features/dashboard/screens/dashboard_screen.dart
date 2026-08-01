@@ -1,4 +1,4 @@
-/// AUCTE — Doctor Workspace Dashboard Screen (100% Dynamic Real-Time Platform).
+/// AUCTE — Doctor Workspace Dashboard Screen (100% Dynamic Real-Data Architecture).
 library;
 
 import 'dart:math' as math;
@@ -52,6 +52,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final userAsync = ref.watch(currentUserProvider);
     final statsAsync = ref.watch(dashboardStatsStreamProvider);
     final activityAsync = ref.watch(dashboardActivityStreamProvider);
+    final recentSearches = ref.watch(recentSearchesProvider);
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -91,10 +92,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               _buildQuickActionsGrid(context),
               const SizedBox(height: 24),
 
-              // ── 5. Continue Working (Horizontal Scroll Cards) ────
+              // ── 5. Continue Working (Derived from Real History) ───
               _buildSectionHeader('Continue Working', () => context.go('/terminology')),
               const SizedBox(height: 12),
-              _buildContinueWorkingList(context),
+              _buildContinueWorkingList(context, recentSearches),
               const SizedBox(height: 24),
 
               // ── 6. Analytics Section (Dynamic Donut + Dynamic Bar) ─
@@ -311,7 +312,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   dense: true,
                   title: Text('${item.name} (${item.code})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                   subtitle: Text(item.system, style: const TextStyle(fontSize: 10)),
-                  onTap: () => context.push('/terminology/${item.code}'),
+                  onTap: () {
+                    ref.read(recentSearchesProvider.notifier).addRecentSearch(item);
+                    context.push('/terminology/${item.code}');
+                  },
                 );
               },
             ),
@@ -372,23 +376,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  // ── 5. Continue Working Cards ────────────────────────────────────
-  Widget _buildContinueWorkingList(BuildContext context) {
-    final items = [
-      {'title': 'Jwara (Fever)', 'code': 'NA-01-01-001'},
-      {'title': 'Kasa (Cough)', 'code': 'NA-02-01-002'},
-      {'title': 'Prameha', 'code': 'NA-03-01-003'},
-    ];
+  // ── 5. Continue Working Cards (Pure Real History) ────────────────
+  Widget _buildContinueWorkingList(BuildContext context, List<NamasteCodeModel> recent) {
+    if (recent.isEmpty) {
+      return const AucteMedicalCard(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Text(
+          'No recent terminology opened yet.',
+          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+        ),
+      );
+    }
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: items.map((item) {
+        children: recent.take(5).map((item) {
           return Container(
             margin: const EdgeInsets.only(right: 10),
             width: 175,
             child: AucteMedicalCard(
-              onTap: () => context.push('/terminology/${item['code']}'),
+              onTap: () => context.push('/terminology/${item.code}'),
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
@@ -406,12 +414,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item['title']!,
+                          item.name,
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.darkSlate),
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          item['code']!,
+                          item.code,
                           style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
                         ),
                       ],
@@ -434,6 +442,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     AsyncValue<DashboardStatsModel> statsAsync,
   ) {
     final stats = statsAsync.valueOrNull ?? DashboardStatsModel.empty;
+    final hasSearchData = stats.systemDistribution.isNotEmpty;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,37 +456,49 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               children: [
                 const Text('Search Distribution', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.darkSlate)),
                 const SizedBox(height: 12),
-                Row(
-                  children: [
-                    SizedBox(
-                      height: 74,
-                      width: 74,
-                      child: CustomPaint(
-                        painter: _ReferenceDonutPainter(
-                          ayurvedaPct: stats.systemDistribution['Ayurveda'] ?? 0.65,
-                          siddhaPct: stats.systemDistribution['Siddha'] ?? 0.20,
-                          unaniPct: stats.systemDistribution['Unani'] ?? 0.15,
-                        ),
-                        child: const Center(
-                          child: Text('15%', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9, color: AppColors.darkSlate)),
+                if (!hasSearchData)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    child: Text(
+                      'Your search distribution will appear here.',
+                      style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                    ),
+                  )
+                else
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: 74,
+                        width: 74,
+                        child: CustomPaint(
+                          painter: _ReferenceDonutPainter(
+                            ayurvedaPct: stats.systemDistribution['Ayurveda'] ?? 0.0,
+                            siddhaPct: stats.systemDistribution['Siddha'] ?? 0.0,
+                            unaniPct: stats.systemDistribution['Unani'] ?? 0.0,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${((stats.systemDistribution['Ayurveda'] ?? 0.0) * 100).round()}%',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9, color: AppColors.darkSlate),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildLegendDot(AppColors.deepPurple, 'Ayurveda', '${((stats.systemDistribution['Ayurveda'] ?? 0.65) * 100).round()}%'),
-                          const SizedBox(height: 4),
-                          _buildLegendDot(AppColors.warning, 'Siddha', '${((stats.systemDistribution['Siddha'] ?? 0.20) * 100).round()}%'),
-                          const SizedBox(height: 4),
-                          _buildLegendDot(AppColors.medicalGreen, 'Unani', '${((stats.systemDistribution['Unani'] ?? 0.15) * 100).round()}%'),
-                        ],
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildLegendDot(AppColors.deepPurple, 'Ayurveda', '${((stats.systemDistribution['Ayurveda'] ?? 0.0) * 100).round()}%'),
+                            const SizedBox(height: 4),
+                            _buildLegendDot(AppColors.warning, 'Siddha', '${((stats.systemDistribution['Siddha'] ?? 0.0) * 100).round()}%'),
+                            const SizedBox(height: 4),
+                            _buildLegendDot(AppColors.medicalGreen, 'Unani', '${((stats.systemDistribution['Unani'] ?? 0.0) * 100).round()}%'),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -495,8 +516,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 const SizedBox(height: 8),
                 if (stats.topDiseases.isEmpty)
                   const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text('Data will appear as you use the application.', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)),
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    child: Text(
+                      'Your search analytics will appear here as you use the engine.',
+                      style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                    ),
                   )
                 else
                   ...stats.topDiseases.map((d) {
@@ -610,7 +634,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     AsyncValue<DashboardStatsModel> statsAsync,
   ) {
     final activities = activityAsync.valueOrNull ?? [];
-    final trendPoints = statsAsync.valueOrNull?.sevenDayTrend ?? [35, 50, 40, 90, 55, 35, 65];
+    final trendPoints = statsAsync.valueOrNull?.sevenDayTrend ?? [0, 0, 0, 0, 0, 0, 0];
+    final hasTrendData = trendPoints.any((p) => p > 0);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -625,7 +650,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               if (activities.isEmpty)
                 const AucteMedicalCard(
                   padding: EdgeInsets.all(12),
-                  child: Text('No recent activity.', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                  child: Text('No recent activity yet.', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
                 )
               else
                 ...activities.take(4).map((act) {
@@ -656,22 +681,33 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               children: [
                 const Text('Search Trend (7 Days)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppColors.darkSlate)),
                 const SizedBox(height: 10),
-                SizedBox(
-                  height: 110,
-                  width: double.infinity,
-                  child: CustomPaint(
-                    painter: _SearchTrendSparklinePainter(trendPoints: trendPoints),
+                if (!hasTrendData)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Text(
+                      'No search activity trend data yet.',
+                      style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                else ...[
+                  SizedBox(
+                    height: 110,
+                    width: double.infinity,
+                    child: CustomPaint(
+                      painter: _SearchTrendSparklinePainter(trendPoints: trendPoints),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text('26 Jul', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
-                    Text('29 Jul', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
-                    Text('01 Aug', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
-                  ],
-                ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text('26 Jul', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
+                      Text('29 Jul', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
+                      Text('01 Aug', style: TextStyle(fontSize: 8, color: AppColors.textSecondary)),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -784,21 +820,27 @@ class _ReferenceDonutPainter extends CustomPainter {
     double startAngle = -math.pi / 2;
 
     // Ayurveda
-    paint.color = AppColors.deepPurple;
-    final sweep1 = 2 * math.pi * ayurvedaPct;
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep1 - 0.05, false, paint);
-    startAngle += sweep1;
+    if (ayurvedaPct > 0) {
+      paint.color = AppColors.deepPurple;
+      final sweep1 = 2 * math.pi * ayurvedaPct;
+      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep1 - 0.05, false, paint);
+      startAngle += sweep1;
+    }
 
     // Siddha
-    paint.color = AppColors.warning;
-    final sweep2 = 2 * math.pi * siddhaPct;
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep2 - 0.05, false, paint);
-    startAngle += sweep2;
+    if (siddhaPct > 0) {
+      paint.color = AppColors.warning;
+      final sweep2 = 2 * math.pi * siddhaPct;
+      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep2 - 0.05, false, paint);
+      startAngle += sweep2;
+    }
 
     // Unani
-    paint.color = AppColors.medicalGreen;
-    final sweep3 = 2 * math.pi * unaniPct;
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep3 - 0.05, false, paint);
+    if (unaniPct > 0) {
+      paint.color = AppColors.medicalGreen;
+      final sweep3 = 2 * math.pi * unaniPct;
+      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), startAngle, sweep3 - 0.05, false, paint);
+    }
   }
 
   @override
@@ -813,7 +855,7 @@ class _SearchTrendSparklinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (trendPoints.isEmpty) return;
+    if (trendPoints.isEmpty || !trendPoints.any((p) => p > 0)) return;
 
     final maxVal = trendPoints.reduce(math.max);
     final minVal = trendPoints.reduce(math.min);

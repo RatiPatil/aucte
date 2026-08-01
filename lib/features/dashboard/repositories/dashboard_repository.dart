@@ -1,10 +1,12 @@
-/// AUCTE — Real-Time Dashboard Repository.
+/// AUCTE — Real-Time Dashboard Repository (Zero Hardcoded Operational Data).
 ///
 /// Queries Firestore streams for search_history, activity_logs, generated_fhir,
-/// generated_bundles, mapping_history, favorites, and notifications collections.
+/// generated_bundles, mapping_history, favorites, and notifications collections
+/// for the specific authenticated userId. Returns pure ZERO / EMPTY states when no actions exist.
 library;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/activity_log_model.dart';
 import '../models/dashboard_stats_model.dart';
@@ -15,41 +17,8 @@ class DashboardRepository {
 
   final FirebaseFirestore _firestore;
 
-  // In-memory dynamic log list for local interactions
-  final List<ActivityLogModel> _localLogs = [
-    ActivityLogModel(
-      id: 'log-001',
-      userId: 'dr-sharma-001',
-      title: 'Searched "Jwara (Fever)"',
-      subtitle: 'NAMASTE: NA-01-01-001',
-      iconName: 'search_rounded',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
-    ),
-    ActivityLogModel(
-      id: 'log-002',
-      userId: 'dr-sharma-001',
-      title: 'Mapped to TM2 Code',
-      subtitle: 'TM2: 120936000',
-      iconName: 'account_tree_rounded',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 40)),
-    ),
-    ActivityLogModel(
-      id: 'log-003',
-      userId: 'dr-sharma-001',
-      title: 'Generated FHIR Condition',
-      subtitle: 'Condition Resource Created',
-      iconName: 'code_rounded',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 37)),
-    ),
-    ActivityLogModel(
-      id: 'log-004',
-      userId: 'dr-sharma-001',
-      title: 'Generated FHIR Bundle',
-      subtitle: 'Bundle ID: BND-2025-08-01-001',
-      iconName: 'layers_rounded',
-      timestamp: DateTime.now().subtract(const Duration(minutes: 35)),
-    ),
-  ];
+  // In-memory dynamic log list per session (starts empty)
+  final List<ActivityLogModel> _sessionLogs = [];
 
   Stream<DashboardStatsModel> watchDashboardStats(String userId) async* {
     try {
@@ -84,53 +53,81 @@ class DashboardRepository {
           .get()
           .timeout(const Duration(seconds: 2));
 
-      yield DashboardStatsModel(
-        searchCount: searchesSnap.docs.length,
-        mappingCount: mappingsSnap.docs.length,
-        fhirCount: fhirSnap.docs.length,
-        bundleCount: bundlesSnap.docs.length,
-        unreadNotificationsCount: notifSnap.docs.length,
-        systemDistribution: const {
-          'Ayurveda': 0.65,
-          'Siddha': 0.20,
-          'Unani': 0.15,
-        },
-        topDiseases: const [
-          {'name': 'Jwara (Fever)', 'count': 128, 'pct': 1.0},
-          {'name': 'Kasa (Cough)', 'count': 96, 'pct': 0.75},
-          {'name': 'Prameha', 'count': 72, 'pct': 0.56},
-          {'name': 'Arsha (Piles)', 'count': 48, 'pct': 0.37},
-          {'name': 'Vata Vyadhi', 'count': 36, 'pct': 0.28},
-        ],
-        sevenDayTrend: const [35, 50, 40, 90, 55, 35, 65],
-      );
+      final totalSearches = searchesSnap.docs.length;
+
+      if (totalSearches == 0) {
+        yield DashboardStatsModel(
+          searchCount: 0,
+          mappingCount: mappingsSnap.docs.length,
+          fhirCount: fhirSnap.docs.length,
+          bundleCount: bundlesSnap.docs.length,
+          unreadNotificationsCount: notifSnap.docs.length,
+          systemDistribution: const {},
+          topDiseases: const [],
+          sevenDayTrend: const [0, 0, 0, 0, 0, 0, 0],
+        );
+      } else {
+        // Calculate dynamic system distribution
+        final systemCounts = <String, int>{};
+        final diseaseCounts = <String, int>{};
+
+        for (final doc in searchesSnap.docs) {
+          final data = doc.data();
+          final sys = (data['system'] as String?) ?? 'Ayurveda';
+          final term = (data['term'] as String?) ?? 'Unknown';
+
+          systemCounts[sys] = (systemCounts[sys] ?? 0) + 1;
+          diseaseCounts[term] = (diseaseCounts[term] ?? 0) + 1;
+        }
+
+        final systemDist = <String, double>{};
+        systemCounts.forEach((sys, cCount) {
+          systemDist[sys] = cCount / totalSearches;
+        });
+
+        // Top searched diseases
+        final sortedDiseases = diseaseCounts.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+
+        final maxCount = sortedDiseases.isNotEmpty ? sortedDiseases.first.value : 1;
+        final topDiseases = sortedDiseases.take(5).map((e) {
+          return {
+            'name': e.key,
+            'count': e.value,
+            'pct': e.value / maxCount,
+          };
+        }).toList();
+
+        yield DashboardStatsModel(
+          searchCount: totalSearches,
+          mappingCount: mappingsSnap.docs.length,
+          fhirCount: fhirSnap.docs.length,
+          bundleCount: bundlesSnap.docs.length,
+          unreadNotificationsCount: notifSnap.docs.length,
+          systemDistribution: systemDist,
+          topDiseases: topDiseases,
+          sevenDayTrend: const [0, 0, 0, 0, 0, 0, 0],
+        );
+      }
     } catch (e) {
-      // Dynamic local stream fallback
+      debugPrint('[AUCTE DashboardRepository] Offline stream fallback: $e');
+
+      // Pure empty state on error/offline (Zero hardcoded fake numbers)
       yield DashboardStatsModel(
-        searchCount: 24,
-        mappingCount: 18,
-        fhirCount: 15,
-        bundleCount: 12,
-        unreadNotificationsCount: 3,
-        systemDistribution: const {
-          'Ayurveda': 0.65,
-          'Siddha': 0.20,
-          'Unani': 0.15,
-        },
-        topDiseases: const [
-          {'name': 'Jwara (Fever)', 'count': 128, 'pct': 1.0},
-          {'name': 'Kasa (Cough)', 'count': 96, 'pct': 0.75},
-          {'name': 'Prameha', 'count': 72, 'pct': 0.56},
-          {'name': 'Arsha (Piles)', 'count': 48, 'pct': 0.37},
-          {'name': 'Vata Vyadhi', 'count': 36, 'pct': 0.28},
-        ],
-        sevenDayTrend: const [35, 50, 40, 90, 55, 35, 65],
+        searchCount: _sessionLogs.where((l) => l.title.startsWith('Searched')).length,
+        mappingCount: _sessionLogs.where((l) => l.title.startsWith('Mapped')).length,
+        fhirCount: _sessionLogs.where((l) => l.title.startsWith('Generated FHIR')).length,
+        bundleCount: _sessionLogs.where((l) => l.title.startsWith('Generated Bundle')).length,
+        unreadNotificationsCount: 0,
+        systemDistribution: const {},
+        topDiseases: const [],
+        sevenDayTrend: const [0, 0, 0, 0, 0, 0, 0],
       );
     }
   }
 
   Stream<List<ActivityLogModel>> watchRecentActivity(String userId) async* {
-    yield _localLogs;
+    yield _sessionLogs.where((l) => l.userId == userId).toList();
   }
 
   void logUserAction({
@@ -139,7 +136,7 @@ class DashboardRepository {
     required String subtitle,
     required String iconName,
   }) {
-    _localLogs.insert(
+    _sessionLogs.insert(
       0,
       ActivityLogModel(
         id: 'log-${DateTime.now().millisecondsSinceEpoch}',
