@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101335608189675273154",
+    "project_id": "aucte-16dcb",
+    "storage_bucket": "aucte-16dcb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101335608189675273154:android:aucte16dcb",
+        "android_client_info": {
+          "package_name": "com.example.aucte"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_aucte_16dcb_android_key"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
