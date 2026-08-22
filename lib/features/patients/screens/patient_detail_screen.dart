@@ -216,40 +216,96 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
 
                 const SizedBox(height: 20),
 
-                // CTA: Start Encounter
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      await Navigator.pushNamed(
-                        context,
-                        AppRoutes.encounter,
-                        arguments: patient,
-                      );
-                      _loadEncounters();
-                    },
-                    icon: const Icon(Icons.note_add_rounded),
-                    label: const Text('Start Clinical Encounter'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: AppColors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+                // Action buttons: Encounter + FHIR
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: SizedBox(
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            await Navigator.pushNamed(
+                              context,
+                              AppRoutes.encounter,
+                              arguments: patient,
+                            );
+                            _loadEncounters();
+                          },
+                          icon: const Icon(Icons.note_add_rounded, size: 18),
+                          label: const Text('Start Encounter'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 2,
+                      child: SizedBox(
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.fhirPreview,
+                              arguments: {
+                                'patient': patient,
+                                'title': 'FHIR Patient: ${patient.fullName}',
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.data_object_rounded, size: 18),
+                          label: const Text('FHIR JSON'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            side: const BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 24),
 
                 // Encounter History
-                Text(
-                  'Encounter History',
-                  style: AppTextStyles.headingSmall.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Encounter History',
+                      style: AppTextStyles.headingSmall.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        '${_patientEncounters.length} FHIR Records',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
 
@@ -343,6 +399,31 @@ class _PatientDetailScreenState extends State<PatientDetailScreen> {
                                   style: AppTextStyles.bodySmall.copyWith(
                                     color: AppColors.textSecondary,
                                   ),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton.icon(
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          AppRoutes.fhirPreview,
+                                          arguments: {
+                                            'encounter': enc,
+                                            'patient': patient,
+                                            'title':
+                                                'FHIR Encounter: ${patient.fullName}',
+                                          },
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.visibility_outlined,
+                                        size: 16,
+                                      ),
+                                      label: const Text('View FHIR Bundle'),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

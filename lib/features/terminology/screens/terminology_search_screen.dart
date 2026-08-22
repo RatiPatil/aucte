@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/clinical_term_model.dart';
@@ -556,6 +557,37 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
             ),
 
             const SizedBox(height: 20),
+
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.fhirPreview,
+                        arguments: {
+                          'term': term,
+                          'title': 'FHIR Condition: ${term.namasteTerm}',
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.code_rounded, size: 18),
+                    label: const Text('View FHIR Condition JSON'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF7C3AED),
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
 
             SizedBox(
               width: double.infinity,

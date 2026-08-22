@@ -197,7 +197,36 @@ class _MappingScreenState extends State<MappingScreen> {
                         color: const Color(0xFF8B5CF6),
                       ),
 
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.fhirPreview,
+                              arguments: {
+                                'term': term,
+                                'title':
+                                    'FHIR R4 Condition: ${term.namasteTerm}',
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.code_rounded, size: 18),
+                          label: const Text('Inspect FHIR Condition JSON'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF8B5CF6),
+                            side: const BorderSide(color: Color(0xFF8B5CF6)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
 
                       // CTA
                       SizedBox(

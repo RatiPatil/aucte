@@ -7,6 +7,7 @@ import '../../../shared/widgets/aucte_logo.dart';
 import '../../authentication/models/practitioner_model.dart';
 import '../../authentication/repositories/local_auth_repository.dart';
 import '../../encounters/repositories/local_encounter_repository.dart';
+import '../../fhir_records/repositories/local_fhir_record_repository.dart';
 import '../../patients/repositories/local_patient_repository.dart';
 import '../../terminology/repositories/local_terminology_repository.dart';
 
@@ -24,6 +25,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _patientCount = 0;
   int _encounterCount = 0;
   int _termCount = 100;
+  int _fhirBundleCount = 0;
   bool _isLoading = true;
 
   @override
@@ -37,6 +39,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final patients = await LocalPatientRepository.instance.getPatients();
     final encounters = await LocalEncounterRepository.instance.getEncounters();
     final terms = await LocalTerminologyRepository.instance.getAllTerms();
+    final bundles = await LocalFhirRecordRepository.instance.getBundles();
 
     if (mounted) {
       setState(() {
@@ -44,6 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _patientCount = patients.length;
         _encounterCount = encounters.length;
         _termCount = terms.isEmpty ? 100 : terms.length;
+        _fhirBundleCount = bundles.length;
         _isLoading = false;
       });
     }
@@ -260,36 +264,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                       )
-                    : Row(
+                    : Column(
                         children: [
-                          Expanded(
-                            child: _StatTile(
-                              icon: Icons.people_outline_rounded,
-                              title: 'Patients',
-                              value: '$_patientCount',
-                              subtitle: 'Active roster',
-                              color: const Color(0xFFFF6B00),
-                            ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _StatTile(
+                                  icon: Icons.people_outline_rounded,
+                                  title: 'Patients',
+                                  value: '$_patientCount',
+                                  subtitle: 'Active roster',
+                                  color: const Color(0xFFFF6B00),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _StatTile(
+                                  icon: Icons.assignment_outlined,
+                                  title: 'Encounters',
+                                  value: '$_encounterCount',
+                                  subtitle: 'Clinical visits',
+                                  color: const Color(0xFF16A36A),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _StatTile(
-                              icon: Icons.assignment_outlined,
-                              title: 'Encounters',
-                              value: '$_encounterCount',
-                              subtitle: 'Clinical visits',
-                              color: const Color(0xFF16A36A),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _StatTile(
-                              icon: Icons.menu_book_outlined,
-                              title: 'Terms',
-                              value: '$_termCount',
-                              subtitle: 'Demo JSON',
-                              color: const Color(0xFF2563EB),
-                            ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _StatTile(
+                                  icon: Icons.data_object_rounded,
+                                  title: 'FHIR Bundles',
+                                  value: '$_fhirBundleCount',
+                                  subtitle: 'R4 Document exports',
+                                  color: const Color(0xFF059669),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _StatTile(
+                                  icon: Icons.menu_book_outlined,
+                                  title: 'Dual Terms',
+                                  value: '$_termCount',
+                                  subtitle: 'NAMASTE + TM2',
+                                  color: const Color(0xFF2563EB),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),

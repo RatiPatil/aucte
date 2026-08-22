@@ -6,6 +6,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../authentication/models/practitioner_model.dart';
 import '../../authentication/repositories/local_auth_repository.dart';
 import '../../consent/models/consent_model.dart';
+import '../../fhir_records/repositories/local_fhir_record_repository.dart';
 import '../../fhir_records/services/fhir_builder_service.dart';
 import '../../patients/models/patient_model.dart';
 import '../../patients/repositories/local_patient_repository.dart';
@@ -124,24 +125,28 @@ class _EncounterScreenState extends State<EncounterScreen> {
           )
         : null;
 
-    final fhirJson = FHIRBuilderService.buildFormattedJson(
+    final pract = practitioner ??
+        PractitionerModel(
+          id: 'DEMO-PRACT-001',
+          fullName: 'Dr. AYUSH Specialist',
+          email: 'doctor@ayush.gov.in',
+          mobile: '9876543210',
+          practitionerId: 'AYU-1001',
+          ayushSystem: 'Ayurveda',
+          institution: 'All India Institute of Ayurveda',
+          password: '',
+          createdAt: DateTime(2026, 1, 1),
+        );
+
+    final fhirBundle = FHIRBuilderService.buildTypedBundle(
       patient: patient,
-      practitioner:
-          practitioner ??
-          PractitionerModel(
-            id: 'DEMO-PRACT-001',
-            fullName: 'Dr. AYUSH Specialist',
-            email: 'doctor@ayush.gov.in',
-            mobile: '9876543210',
-            practitionerId: 'AYU-1001',
-            ayushSystem: 'Ayurveda',
-            institution: 'All India Institute of Ayurveda',
-            password: '',
-            createdAt: DateTime(2026, 1, 1),
-          ),
+      practitioner: pract,
       encounter: savedEncounter,
       consent: consent,
     );
+
+    // Save FHIR Bundle in local repository
+    await LocalFhirRecordRepository.instance.saveBundle(fhirBundle);
 
     if (!mounted) return;
 
@@ -149,9 +154,11 @@ class _EncounterScreenState extends State<EncounterScreen> {
       context,
       AppRoutes.fhirPreview,
       arguments: {
+        'bundle': fhirBundle,
         'encounter': savedEncounter,
         'patient': patient,
-        'fhirJson': fhirJson,
+        'fhirJson': fhirBundle.toFormattedJson(),
+        'title': 'FHIR Bundle: ${patient.fullName}',
       },
     );
   }
