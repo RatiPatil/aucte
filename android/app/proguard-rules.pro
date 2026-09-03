@@ -31,3 +31,8 @@
 -dontwarn java.lang.ClassValue
 -dontwarn org.conscrypt.**
 -dontwarn org.openjsse.**
+
+# Ignore warnings for missing Play Core classes referenced by Flutter
+-dontwarn com.google.android.play.core.splitcompat.**
+-dontwarn com.google.android.play.core.splitinstall.**
+-dontwarn com.google.android.play.core.tasks.**
