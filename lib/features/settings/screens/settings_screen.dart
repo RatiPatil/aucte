@@ -153,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               Text(
-                'SIH Prototype Information',
+                'About',
                 style: AppTextStyles.labelLarge.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -171,19 +171,24 @@ class SettingsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'AUCTE — Ayush Unified Clinical Terminology Engine',
+                      'AUCTE — AYUSH Unified Clinical Terminology Engine',
                       style: AppTextStyles.labelLarge.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'This prototype is designed as an educational demonstration app inspired by SIH Problem Statement 25026.',
+                      'A secure digital platform for AYUSH practitioners enabling '
+                      'unified clinical terminology mapping across NAMASTE, '
+                      'WHO ICD-11 TM2, and FHIR R4 standards.',
                       style: AppTextStyles.bodySmall,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'IMPORTANT NOTICE:\nThis application is an educational SIH prototype. It is NOT officially ABHA certified, WHO certified, Ministry of Ayush certified, or production EHR compliant.',
+                      'IMPORTANT NOTICE: This application is designed for use '
+                      'by qualified AYUSH practitioners. Clinical terminology '
+                      'mappings must be verified against official NAMASTE and '
+                      'WHO ICD-11 sources before real-world clinical use.',
                       style: AppTextStyles.caption.copyWith(
                         color: AppColors.textMuted,
                         fontStyle: FontStyle.italic,

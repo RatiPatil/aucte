@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:101335608189675273154:android:aucte16dcb",
         "android_client_info": {
-          "package_name": "com.example.aucte"
+          "package_name": "in.gov.ayush.aucte"
         }
       },
       "oauth_client": [],

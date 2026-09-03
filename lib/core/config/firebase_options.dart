@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '101335608189675273154',
     projectId: 'aucte-16dcb',
     storageBucket: 'aucte-16dcb.appspot.com',
-    iosBundleId: 'com.example.aucte',
+    iosBundleId: 'in.gov.ayush.aucte',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -67,6 +67,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '101335608189675273154',
     projectId: 'aucte-16dcb',
     storageBucket: 'aucte-16dcb.appspot.com',
-    iosBundleId: 'com.example.aucte',
+    iosBundleId: 'in.gov.ayush.aucte',
   );
 }

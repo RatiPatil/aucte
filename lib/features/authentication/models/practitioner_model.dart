@@ -9,8 +9,12 @@ class PractitionerModel {
     required this.practitionerId,
     required this.ayushSystem,
     required this.institution,
-    required this.password,
     required this.createdAt,
+    this.photoURL,
+    this.provider = 'email',
+    // password is kept as a local-only transient field and is NEVER
+    // serialised to Firestore. It is only used by the local demo auth path.
+    this.password = '',
   });
 
   final String id;
@@ -20,13 +24,18 @@ class PractitionerModel {
   final String practitionerId;
   final String ayushSystem;
   final String institution;
-
-  // DEMO ONLY.
-  // Never store plain-text passwords in production.
-  final String password;
-
   final DateTime createdAt;
 
+  /// Google/Firebase profile photo URL. Null for email-registered users.
+  final String? photoURL;
+
+  /// Authentication provider: 'google', 'email', or 'local'.
+  final String provider;
+
+  /// Local-only password. NEVER written to Firestore.
+  final String password;
+
+  /// Serialise for Firestore — password is intentionally excluded.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -36,7 +45,8 @@ class PractitionerModel {
       'practitionerId': practitionerId,
       'ayushSystem': ayushSystem,
       'institution': institution,
-      'password': password,
+      'photoURL': photoURL,
+      'provider': provider,
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -50,14 +60,26 @@ class PractitionerModel {
       practitionerId: map['practitionerId']?.toString() ?? '',
       ayushSystem: map['ayushSystem']?.toString() ?? '',
       institution: map['institution']?.toString() ?? '',
-      password: map['password']?.toString() ?? '',
+      photoURL: map['photoURL']?.toString(),
+      provider: map['provider']?.toString() ?? 'email',
+      // password is never read from Firestore — always empty
+      password: '',
       createdAt:
           DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
           DateTime.now(),
     );
   }
 
-  String toJson() => jsonEncode(toMap());
+  /// Serialise for local SharedPreferences storage (includes password for
+  /// the local demo auth path only).
+  Map<String, dynamic> toLocalMap() {
+    return {
+      ...toMap(),
+      'password': password,
+    };
+  }
+
+  String toJson() => jsonEncode(toLocalMap());
 
   factory PractitionerModel.fromJson(String source) {
     return PractitionerModel.fromMap(
@@ -73,8 +95,10 @@ class PractitionerModel {
     String? practitionerId,
     String? ayushSystem,
     String? institution,
-    String? password,
     DateTime? createdAt,
+    String? photoURL,
+    String? provider,
+    String? password,
   }) {
     return PractitionerModel(
       id: id ?? this.id,
@@ -84,8 +108,10 @@ class PractitionerModel {
       practitionerId: practitionerId ?? this.practitionerId,
       ayushSystem: ayushSystem ?? this.ayushSystem,
       institution: institution ?? this.institution,
-      password: password ?? this.password,
       createdAt: createdAt ?? this.createdAt,
+      photoURL: photoURL ?? this.photoURL,
+      provider: provider ?? this.provider,
+      password: password ?? this.password,
     );
   }
 }

@@ -59,13 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Welcome back, Practitioner!'),
-          backgroundColor: AppColors.success,
-        ),
-      );
-
       Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
     } catch (e) {
       if (!mounted) return;
@@ -113,11 +106,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _quickFillDemoAccount() {
-    _identifierController.text = 'AYU-PRACT-1001';
-    _passwordController.text = 'password123';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,6 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 28),
 
+                  // ─── Error Message ─────────────────────────────────────
                   if (_errorMessage != null) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -192,13 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 18),
                   ],
 
-                  // Email or Practitioner ID
+                  // ─── Email / Practitioner ID ───────────────────────────
                   TextFormField(
                     controller: _identifierController,
                     keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
                     decoration: const InputDecoration(
                       labelText: 'Email or Practitioner ID',
-                      hintText: 'e.g. practitioner@ayush.gov.in or AYU-1001',
+                      hintText: 'e.g. practitioner@ayush.gov.in',
                       prefixIcon: Icon(Icons.person_outline_rounded),
                     ),
                     validator: (value) {
@@ -211,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 16),
 
-                  // Password
+                  // ─── Password ──────────────────────────────────────────
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
@@ -225,6 +215,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? Icons.visibility_off_outlined
                               : Icons.visibility_outlined,
                         ),
+                        tooltip: _obscurePassword
+                            ? 'Show password'
+                            : 'Hide password',
                         onPressed: () {
                           setState(() {
                             _obscurePassword = !_obscurePassword;
@@ -245,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 12),
 
-                  // Remember me
+                  // ─── Remember Me ───────────────────────────────────────
                   Row(
                     children: [
                       Checkbox(
@@ -258,7 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       Text(
-                        'Remember Practitioner ID',
+                        'Remember me',
                         style: AppTextStyles.bodyMedium,
                       ),
                     ],
@@ -266,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 20),
 
-                  // Submit Button
+                  // ─── Sign In Button ────────────────────────────────────
                   SizedBox(
                     height: 54,
                     child: ElevatedButton(
@@ -289,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : Text(
-                              'Sign In to Clinical Engine',
+                              'Sign In',
                               style: AppTextStyles.button,
                             ),
                     ),
@@ -316,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 16),
 
-                  // Google Sign-In Button
+                  // ─── Google Sign-In Button ─────────────────────────────
                   SizedBox(
                     height: 54,
                     child: OutlinedButton(
@@ -325,7 +318,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           : _signInWithGoogle,
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: AppColors.primary.withValues(alpha: 0.3),
+                          color: AppColors.primary.withValues(alpha: 0.35),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -344,17 +337,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Image.network(
-                                  'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg',
-                                  height: 22,
-                                  width: 22,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(
-                                        Icons.g_mobiledata_rounded,
-                                        size: 28,
-                                        color: AppColors.primary,
-                                      ),
-                                ),
+                                // Google G icon rendered locally — no network required
+                                const _GoogleIcon(),
                                 const SizedBox(width: 12),
                                 Text(
                                   'Sign in with Google',
@@ -368,34 +352,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 28),
 
-                  // Quick Demo Sign in hint
-                  OutlinedButton.icon(
-                    onPressed: _quickFillDemoAccount,
-                    icon: const Icon(
-                      Icons.auto_awesome_rounded,
-                      size: 18,
-                      color: AppColors.primary,
-                    ),
-                    label: Text(
-                      'Auto-fill Demo Credentials',
-                      style: AppTextStyles.labelMedium.copyWith(
-                        color: AppColors.primary,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: AppColors.primary.withValues(alpha: 0.3),
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
+                  // ─── Register Link ─────────────────────────────────────
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -408,7 +367,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.pushNamed(context, AppRoutes.register);
                         },
                         child: Text(
-                          'Register Practitioner',
+                          'Register',
                           style: AppTextStyles.labelLarge.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.bold,
@@ -425,4 +384,81 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+/// A locally-rendered Google 'G' icon using pure Flutter Canvas.
+/// No network dependency — always available, even offline.
+class _GoogleIcon extends StatelessWidget {
+  const _GoogleIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 22,
+      height: 22,
+      child: CustomPaint(
+        painter: _GoogleGPainter(),
+      ),
+    );
+  }
+}
+
+class _GoogleGPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    // Blue arc (right side)
+    final paintBlue = Paint()
+      ..color = const Color(0xFF4285F4)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.28
+      ..strokeCap = StrokeCap.butt;
+
+    // Red arc (top)
+    final paintRed = Paint()
+      ..color = const Color(0xFFEA4335)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.28
+      ..strokeCap = StrokeCap.butt;
+
+    // Yellow arc (bottom-left)
+    final paintYellow = Paint()
+      ..color = const Color(0xFFFBBC05)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.28
+      ..strokeCap = StrokeCap.butt;
+
+    // Green arc (bottom)
+    final paintGreen = Paint()
+      ..color = const Color(0xFF34A853)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.28
+      ..strokeCap = StrokeCap.butt;
+
+    final arcRadius = radius * 0.72;
+    final rect = Rect.fromCircle(center: center, radius: arcRadius);
+
+    // Draw each quadrant arc
+    canvas.drawArc(rect, -0.52, 1.04, false, paintBlue);   // right
+    canvas.drawArc(rect, -2.62, 1.56, false, paintRed);    // top-left
+    canvas.drawArc(rect, 2.27, 0.88, false, paintYellow);  // bottom-left
+    canvas.drawArc(rect, 0.52, 1.75, false, paintGreen);   // bottom-right
+
+    // Horizontal bar (blue)
+    final barPaint = Paint()
+      ..color = const Color(0xFF4285F4)
+      ..strokeWidth = size.height * 0.26
+      ..strokeCap = StrokeCap.square;
+
+    canvas.drawLine(
+      Offset(center.dx, center.dy),
+      Offset(center.dx + arcRadius, center.dy),
+      barPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

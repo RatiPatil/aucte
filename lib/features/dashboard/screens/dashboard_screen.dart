@@ -5,7 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../shared/widgets/aucte_logo.dart';
 import '../../authentication/models/practitioner_model.dart';
-import '../../authentication/repositories/local_auth_repository.dart';
+import '../../authentication/repositories/firebase_auth_repository.dart';
 import '../../encounters/repositories/local_encounter_repository.dart';
 import '../../fhir_records/repositories/local_fhir_record_repository.dart';
 import '../../patients/repositories/local_patient_repository.dart';
@@ -27,6 +27,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _termCount = 100;
   int _fhirBundleCount = 0;
   bool _isLoading = true;
+  bool _isFirebaseConnected = false;
 
   @override
   void initState() {
@@ -35,11 +36,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadDashboardData() async {
-    final practitioner = LocalAuthRepository.instance.getCurrentPractitioner();
+    final practitioner = FirebaseAuthRepository.instance.getCurrentPractitioner();
     final patients = await LocalPatientRepository.instance.getPatients();
     final encounters = await LocalEncounterRepository.instance.getEncounters();
     final terms = await LocalTerminologyRepository.instance.getAllTerms();
     final bundles = await LocalFhirRecordRepository.instance.getBundles();
+
+    // Determine Firebase connectivity by checking if Firebase Auth has an active user
+    // A non-null FirebaseAuth currentUser indicates Firebase is reachable.
+    bool firebaseConnected = false;
+    try {
+      final firebaseUser = FirebaseAuthRepository.instance.isLoggedIn;
+      firebaseConnected = firebaseUser;
+    } catch (_) {
+      firebaseConnected = false;
+    }
 
     if (mounted) {
       setState(() {
@@ -49,13 +60,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _termCount = terms.isEmpty ? 100 : terms.length;
         _fhirBundleCount = bundles.length;
         _isLoading = false;
+        _isFirebaseConnected = firebaseConnected &&
+            (practitioner?.provider == 'google' ||
+                practitioner?.provider == 'email');
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final name = _currentPractitioner?.fullName ?? 'Dr. AYUSH Practitioner';
+    final name = _currentPractitioner?.fullName.isNotEmpty == true
+        ? _currentPractitioner!.fullName
+        : 'AYUSH Practitioner';
     final system = _currentPractitioner?.ayushSystem ?? 'Ayurveda';
 
     return Scaffold(
@@ -100,7 +116,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                '$system Specialist • AUCTE SIH Demo',
+                                '$system Specialist • AUCTE',
                                 style: AppTextStyles.bodySmall.copyWith(
                                   color: AppColors.textSecondary,
                                 ),
@@ -420,29 +436,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                   child: Column(
-                    children: const [
-                      _StatusRow(
+                    children: [
+                      const _StatusRow(
                         title: 'NAMASTE Dataset',
                         statusText: '100 Demo Terms Ready',
                         isGreen: true,
                       ),
-                      Divider(height: 18),
-                      _StatusRow(
+                      const Divider(height: 18),
+                      const _StatusRow(
                         title: 'WHO ICD-11 TM2',
                         statusText: 'Mapped (Demo Version 1.0)',
                         isGreen: true,
                       ),
-                      Divider(height: 18),
-                      _StatusRow(
+                      const Divider(height: 18),
+                      const _StatusRow(
                         title: 'FHIR R4 Generator',
                         statusText: 'Enabled (Bundle Builder)',
                         isGreen: true,
                       ),
-                      Divider(height: 18),
+                      const Divider(height: 18),
                       _StatusRow(
                         title: 'Firebase Integration',
-                        statusText: 'Not Connected (Local Demo Mode)',
-                        isGreen: false,
+                        statusText: _isFirebaseConnected
+                            ? 'Connected'
+                            : 'Offline — Local Mode Active',
+                        isGreen: _isFirebaseConnected,
                       ),
                     ],
                   ),

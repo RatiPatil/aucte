@@ -183,25 +183,13 @@ class LocalAuthRepository implements AuthRepository {
 
   @override
   Future<PractitionerModel> signInWithGoogle() async {
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    final practitioner = PractitionerModel(
-      id: _uuid.v4(),
-      fullName: 'Dr. Google User',
-      email: 'user@google.com',
-      mobile: '+919876543210',
-      practitionerId: 'AYU-G-1001',
-      ayushSystem: 'Ayurveda',
-      institution: 'All India Institute of Ayurveda',
-      password: '',
-      createdAt: DateTime.now(),
+    // Google Sign-In requires Firebase Auth and cannot be handled locally.
+    // This path should never be reached in a properly configured environment.
+    throw Exception(
+      'Google Sign-In requires an internet connection and a configured '
+      'Firebase project. Please ensure you are connected to the internet '
+      'and try again.',
     );
-
-    await _storage.setBool(StorageKeys.isLoggedIn, true);
-    await _storage.setString(
-      StorageKeys.currentPractitioner,
-      practitioner.toJson(),
-    );
-    return practitioner;
   }
 
   @override
