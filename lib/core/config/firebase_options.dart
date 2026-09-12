@@ -34,39 +34,40 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // TODO: Replace with your actual Firebase project credentials
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyA_aucte_16dcb_web_key',
-    appId: '1:101335608189675273154:web:aucte16dcb',
-    messagingSenderId: '101335608189675273154',
-    projectId: 'aucte-16dcb',
-    authDomain: 'aucte-16dcb.firebaseapp.com',
-    storageBucket: 'aucte-16dcb.appspot.com',
+    apiKey: 'AIzaSyBksBZQBIBukHCfDjuU0cyZv4iF3mqrqx4',
+    appId: '1:80730281294:web:9c613c5ba767781c1c3a1f',
+    messagingSenderId: '80730281294',
+    projectId: 'aucte-b89ad',
+    authDomain: 'aucte-b89ad.firebaseapp.com',
+    storageBucket: 'aucte-b89ad.firebasestorage.app',
+    measurementId: 'G-6Y491E0007',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA_aucte_16dcb_android_key',
-    appId: '1:101335608189675273154:android:aucte16dcb',
-    messagingSenderId: '101335608189675273154',
-    projectId: 'aucte-16dcb',
-    storageBucket: 'aucte-16dcb.appspot.com',
+    apiKey: 'AIzaSyD1MgO4bjQcbakHSvaOjf9L79CppeXb0Po',
+    appId: '1:80730281294:android:b2951d907bbc6afc1c3a1f',
+    messagingSenderId: '80730281294',
+    projectId: 'aucte-b89ad',
+    storageBucket: 'aucte-b89ad.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA_aucte_16dcb_ios_key',
-    appId: '1:101335608189675273154:ios:aucte16dcb',
-    messagingSenderId: '101335608189675273154',
-    projectId: 'aucte-16dcb',
-    storageBucket: 'aucte-16dcb.appspot.com',
+    apiKey: 'AIzaSyD1MgO4bjQcbakHSvaOjf9L79CppeXb0Po',
+    appId: '1:80730281294:ios:b2951d907bbc6afc1c3a1f',
+    messagingSenderId: '80730281294',
+    projectId: 'aucte-b89ad',
+    storageBucket: 'aucte-b89ad.firebasestorage.app',
     iosBundleId: 'in.gov.ayush.aucte',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyA_aucte_16dcb_macos_key',
-    appId: '1:101335608189675273154:ios:aucte16dcb',
-    messagingSenderId: '101335608189675273154',
-    projectId: 'aucte-16dcb',
-    storageBucket: 'aucte-16dcb.appspot.com',
+    apiKey: 'AIzaSyD1MgO4bjQcbakHSvaOjf9L79CppeXb0Po',
+    appId: '1:80730281294:ios:b2951d907bbc6afc1c3a1f',
+    messagingSenderId: '80730281294',
+    projectId: 'aucte-b89ad',
+    storageBucket: 'aucte-b89ad.firebasestorage.app',
     iosBundleId: 'in.gov.ayush.aucte',
   );
 }
+

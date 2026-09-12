@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
@@ -120,7 +122,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Center(child: AucteLogo(size: 68)),
+                  const Center(child: AucteLogo(size: 68))
+                      .animate()
+                      .fadeIn(duration: 600.ms)
+                      .scale(delay: 200.ms),
+                  const SizedBox(height: 18),
+
+                  // Medical Lottie Animation
+                  SizedBox(
+                    height: 150,
+                    child: Lottie.network(
+                      'https://assets8.lottiefiles.com/packages/lf20_tutvdkg0.json', // Example medical animation
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.health_and_safety,
+                        size: 80,
+                        color: AppColors.primary,
+                      ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+                       .scale(begin: const Offset(1, 1), end: const Offset(1.1, 1.1), duration: 1.seconds),
+                    ),
+                  ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.2, end: 0),
+
                   const SizedBox(height: 18),
 
                   Text(
@@ -130,17 +151,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppColors.primary,
                       letterSpacing: 2,
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
 
                   const SizedBox(height: 6),
 
                   Text(
-                    'Practitioner Portal',
+                    'Digital Healthcare Portal',
                     textAlign: TextAlign.center,
                     style: AppTextStyles.headingSmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2, end: 0),
 
                   const SizedBox(height: 28),
 
@@ -375,11 +396,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ],
-                  ),
+                  ).animate().fadeIn(delay: 900.ms),
                 ],
               ),
             ),
-          ),
+          ).animate().fadeIn(duration: 400.ms),
+
         ),
       ),
     );

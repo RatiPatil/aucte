@@ -1,4 +1,4 @@
-package com.example.aucte
+package `in`.gov.ayush.aucte
 
 import io.flutter.embedding.android.FlutterActivity
 

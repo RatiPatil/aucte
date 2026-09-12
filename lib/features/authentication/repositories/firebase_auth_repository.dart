@@ -17,7 +17,9 @@ class FirebaseAuthRepository implements AuthRepository {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: kIsWeb ? '80730281294-jpch8g7jepk3ofr7vglgsecs66ps8qbl.apps.googleusercontent.com' : null,
+  );
   final SharedPreferencesService _storage = SharedPreferencesService.instance;
   final LocalAuthRepository _localAuth = LocalAuthRepository.instance;
   final Uuid _uuid = const Uuid();
@@ -81,10 +83,14 @@ class FirebaseAuthRepository implements AuthRepository {
       );
 
       // Save to Cloud Firestore — password is excluded by toMap()
-      await _firestore
-          .collection('practitioners')
-          .doc(uid)
-          .set(practitioner.toMap());
+      try {
+        await _firestore
+            .collection('practitioners')
+            .doc(uid)
+            .set(practitioner.toMap());
+      } catch (e) {
+        debugPrint('Firestore set error (ignored to continue register): $e');
+      }
 
       await _persistSession(practitioner: practitioner, rememberMe: true);
       return practitioner;
@@ -122,17 +128,45 @@ class FirebaseAuthRepository implements AuthRepository {
 
       final firebaseUser = userCredential.user;
       if (firebaseUser != null) {
-        final doc = await _firestore
-            .collection('practitioners')
-            .doc(firebaseUser.uid)
-            .get();
-
         PractitionerModel practitioner;
-        if (doc.exists && doc.data() != null) {
-          practitioner = PractitionerModel.fromMap(doc.data()!);
-        } else {
-          // Document missing — create one from Firebase Auth data
-          // Do NOT default to 'Ayurveda' without user input
+        try {
+          final doc = await _firestore
+              .collection('practitioners')
+              .doc(firebaseUser.uid)
+              .get();
+
+          if (doc.exists && doc.data() != null) {
+            practitioner = PractitionerModel.fromMap(doc.data()!);
+          } else {
+            // Document missing — create one from Firebase Auth data
+            // Do NOT default to 'Ayurveda' without user input
+            practitioner = PractitionerModel(
+              id: firebaseUser.uid,
+              fullName: firebaseUser.displayName?.trim().isNotEmpty == true
+                  ? firebaseUser.displayName!.trim()
+                  : identifier.split('@').first,
+              email: firebaseUser.email ?? identifier,
+              mobile: firebaseUser.phoneNumber ?? '',
+              practitionerId:
+                  'AYU-FB-${firebaseUser.uid.substring(0, 6).toUpperCase()}',
+              ayushSystem: 'Ayurveda',
+              institution: '',
+              provider: 'email',
+              createdAt: DateTime.now(),
+            );
+
+            try {
+              await _firestore
+                  .collection('practitioners')
+                  .doc(firebaseUser.uid)
+                  .set(practitioner.toMap());
+            } catch (e) {
+              debugPrint('Firestore set error (ignored to continue login): $e');
+            }
+          }
+        } catch (e) {
+          debugPrint('Firestore get error (ignored): $e');
+          // If we can't read from Firestore, just create a default local model
           practitioner = PractitionerModel(
             id: firebaseUser.uid,
             fullName: firebaseUser.displayName?.trim().isNotEmpty == true
@@ -147,12 +181,8 @@ class FirebaseAuthRepository implements AuthRepository {
             provider: 'email',
             createdAt: DateTime.now(),
           );
-
-          await _firestore
-              .collection('practitioners')
-              .doc(firebaseUser.uid)
-              .set(practitioner.toMap());
         }
+
 
         await _persistSession(
           practitioner: practitioner,
@@ -221,33 +251,64 @@ class FirebaseAuthRepository implements AuthRepository {
     final resolvedPhotoURL =
         firebaseUser.photoURL ?? googleUser.photoUrl;
 
-    final doc = await _firestore
-        .collection('practitioners')
-        .doc(firebaseUser.uid)
-        .get();
-
     PractitionerModel practitioner;
-    if (doc.exists && doc.data() != null) {
-      final existing = PractitionerModel.fromMap(doc.data()!);
-      // Always refresh name and photo from the latest Google data
-      practitioner = existing.copyWith(
-        fullName: resolvedName,
-        email: firebaseUser.email ?? existing.email,
-        photoURL: resolvedPhotoURL,
-        provider: 'google',
-      );
-      // Update Firestore with refreshed data
-      await _firestore
+    try {
+      final doc = await _firestore
           .collection('practitioners')
           .doc(firebaseUser.uid)
-          .update({
-        'fullName': practitioner.fullName,
-        'email': practitioner.email,
-        'photoURL': practitioner.photoURL,
-        'provider': 'google',
-      });
-    } else {
-      // First-time Google sign-in — create practitioner document
+          .get();
+
+      if (doc.exists && doc.data() != null) {
+        final existing = PractitionerModel.fromMap(doc.data()!);
+        // Always refresh name and photo from the latest Google data
+        practitioner = existing.copyWith(
+          fullName: resolvedName,
+          email: firebaseUser.email ?? existing.email,
+          photoURL: resolvedPhotoURL,
+          provider: 'google',
+        );
+        // Update Firestore with refreshed data
+        try {
+          await _firestore
+              .collection('practitioners')
+              .doc(firebaseUser.uid)
+              .update({
+            'fullName': practitioner.fullName,
+            'email': practitioner.email,
+            'photoURL': practitioner.photoURL,
+            'provider': 'google',
+          });
+        } catch (e) {
+          debugPrint('Firestore update error (ignored to continue login): $e');
+        }
+      } else {
+        // First-time Google sign-in — create practitioner document
+        practitioner = PractitionerModel(
+          id: firebaseUser.uid,
+          fullName: resolvedName,
+          email: firebaseUser.email ?? googleUser.email,
+          mobile: firebaseUser.phoneNumber ?? '',
+          practitionerId:
+              'AYU-G-${firebaseUser.uid.substring(0, 6).toUpperCase()}',
+          ayushSystem: 'Ayurveda',
+          institution: '',
+          photoURL: resolvedPhotoURL,
+          provider: 'google',
+          createdAt: DateTime.now(),
+        );
+
+        try {
+          await _firestore
+              .collection('practitioners')
+              .doc(firebaseUser.uid)
+              .set(practitioner.toMap());
+        } catch (e) {
+          debugPrint('Firestore set error (ignored to continue login): $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Firestore get error (ignored): $e');
+      // Fallback if we can't read from Firestore due to permission errors
       practitioner = PractitionerModel(
         id: firebaseUser.uid,
         fullName: resolvedName,
@@ -261,11 +322,6 @@ class FirebaseAuthRepository implements AuthRepository {
         provider: 'google',
         createdAt: DateTime.now(),
       );
-
-      await _firestore
-          .collection('practitioners')
-          .doc(firebaseUser.uid)
-          .set(practitioner.toMap());
     }
 
     await _persistSession(

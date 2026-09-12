@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // Brand
-  static const Color primary = Color(0xFFFF6B00);
-  static const Color primaryDark = Color(0xFFE85D00);
-  static const Color primaryLight = Color(0xFFFFE2CC);
-  static const Color primarySoft = Color(0xFFFFF3E8);
+  // Brand (Digital Healthcare: Teal / Cyan palette)
+  static const Color primary = Color(0xFF0096C7);
+  static const Color primaryDark = Color(0xFF023E8A);
+  static const Color primaryLight = Color(0xFF90E0EF);
+  static const Color primarySoft = Color(0xFFCAF0F8);
 
   // Backgrounds
   static const Color white = Color(0xFFFFFFFF);
@@ -41,5 +41,5 @@ abstract final class AppColors {
 
   // Shadows
   static const Color shadow = Color(0x14000000);
-  static const Color orangeShadow = Color(0x26FF6B00);
+  static const Color primaryShadow = Color(0x260096C7);
 }

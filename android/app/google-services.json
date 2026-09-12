@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "101335608189675273154",
-    "project_id": "aucte-16dcb",
-    "storage_bucket": "aucte-16dcb.appspot.com"
+    "project_number": "8680712295",
+    "project_id": "alumniapp-45ee6",
+    "storage_bucket": "alumniapp-45ee6.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:101335608189675273154:android:aucte16dcb",
+        "mobilesdk_app_id": "1:8680712295:android:51a9045f2bfb7f8119ccc2",
         "android_client_info": {
           "package_name": "in.gov.ayush.aucte"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA_aucte_16dcb_android_key"
+          "current_key": "AIzaSyBO9U6sgciXrQUl7vVpkzYpD1gOHGEdjmM"
         }
       ],
       "services": {

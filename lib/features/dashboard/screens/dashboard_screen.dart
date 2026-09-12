@@ -180,9 +180,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     boxShadow: const [
                       BoxShadow(
-                        color: AppColors.orangeShadow,
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
+                        color: AppColors.primaryShadow,
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),
