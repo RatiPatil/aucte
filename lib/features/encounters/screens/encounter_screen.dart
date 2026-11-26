@@ -91,6 +91,9 @@ class _EncounterScreenState extends State<EncounterScreen> {
       return;
     }
 
+    final consentId = _consentGranted
+        ? 'auc-consent-${DateTime.now().microsecondsSinceEpoch}'
+        : null;
     final encounter = EncounterModel(
       id: '',
       patientId: patient.id,
@@ -101,7 +104,7 @@ class _EncounterScreenState extends State<EncounterScreen> {
           : 'General Clinical Evaluation',
       clinicalNotes: _clinicalNotesController.text.trim(),
       diagnoses: _selectedDiagnoses,
-      consentId: _consentGranted ? 'CONSENT-GRANTED-DEMO' : null,
+      consentId: consentId,
       status: 'completed',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
@@ -110,9 +113,9 @@ class _EncounterScreenState extends State<EncounterScreen> {
     final savedEncounter = await LocalEncounterRepository.instance
         .createEncounter(encounter);
 
-    final consent = _consentGranted
+    final consent = consentId != null
         ? ConsentModel(
-            id: 'auc-consent-${DateTime.now().millisecondsSinceEpoch}',
+            id: consentId,
             patientId: patient.id,
             encounterId: savedEncounter.id,
             practitionerId: practitioner?.id ?? 'DEMO-PRACT-001',

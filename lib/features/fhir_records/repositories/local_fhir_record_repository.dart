@@ -16,15 +16,17 @@ class LocalFhirRecordRepository implements FhirRecordRepository {
   static final LocalFhirRecordRepository instance =
       LocalFhirRecordRepository._();
 
-  static const String _storageKey = 'aucte_fhir_bundles_v1';
+  String get _storageKey => LocalAuthRepository.instance
+      .clinicalStorageKey('aucte_fhir_bundles_v1');
   List<FhirBundleModel> _cachedBundles = [];
-  bool _isInitialized = false;
+  String? _initializedStorageKey;
 
   Future<void> _init() async {
-    if (_isInitialized) return;
+    final key = _storageKey;
+    if (_initializedStorageKey == key) return;
 
     final prefs = await SharedPreferences.getInstance();
-    final rawList = prefs.getStringList(_storageKey);
+    final rawList = prefs.getStringList(key);
 
     if (rawList != null && rawList.isNotEmpty) {
       _cachedBundles = rawList
@@ -35,7 +37,7 @@ class LocalFhirRecordRepository implements FhirRecordRepository {
       await _hydrateFromEncounters();
     }
 
-    _isInitialized = true;
+    _initializedStorageKey = key;
   }
 
   Future<void> _hydrateFromEncounters() async {

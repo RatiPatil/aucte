@@ -147,8 +147,8 @@ class FhirPeriod {
 
   Map<String, dynamic> toMap() {
     return {
-      if (start != null) 'start': start!.toIso8601String(),
-      if (end != null) 'end': end!.toIso8601String(),
+      if (start != null) 'start': start!.toUtc().toIso8601String(),
+      if (end != null) 'end': end!.toUtc().toIso8601String(),
     };
   }
 

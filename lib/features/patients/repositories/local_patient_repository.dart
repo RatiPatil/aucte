@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../core/services/shared_preferences_service.dart';
+import '../../authentication/repositories/local_auth_repository.dart';
 import '../models/patient_model.dart';
 import 'patient_repository.dart';
 
@@ -12,16 +13,16 @@ class LocalPatientRepository implements PatientRepository {
   final SharedPreferencesService _storage = SharedPreferencesService.instance;
   final Uuid _uuid = const Uuid();
 
-  static const String _patientsStorageKey = 'aucte_local_patients_list';
+  String get _patientsStorageKey => LocalAuthRepository.instance.clinicalStorageKey('aucte_local_patients_list');
 
   final List<PatientModel> _seedPatients = [
     PatientModel(
       id: 'AUC-PAT-1001',
-      fullName: 'Rahul Patil',
+      fullName: 'Rahul Patil (Sample)',
       gender: 'Male',
       dateOfBirth: DateTime(1992, 4, 15),
       mobile: '9876543210',
-      abhaNumber: '91-8842-1092-3841',
+      abhaNumber: null,
       address: '14, Green Park Colony, MG Road',
       city: 'Pune',
       state: 'Maharashtra',
@@ -31,11 +32,11 @@ class LocalPatientRepository implements PatientRepository {
     ),
     PatientModel(
       id: 'AUC-PAT-1002',
-      fullName: 'Anita Sharma',
+      fullName: 'Anita Sharma (Sample)',
       gender: 'Female',
       dateOfBirth: DateTime(1984, 8, 22),
       mobile: '9876501234',
-      abhaNumber: '91-4412-9081-7721',
+      abhaNumber: null,
       address: 'B-402, Sunshine Heights, Civil Lines',
       city: 'Jaipur',
       state: 'Rajasthan',
@@ -45,7 +46,7 @@ class LocalPatientRepository implements PatientRepository {
     ),
     PatientModel(
       id: 'AUC-PAT-1003',
-      fullName: 'Priya Verma',
+      fullName: 'Priya Verma (Sample)',
       gender: 'Female',
       dateOfBirth: DateTime(1997, 11, 3),
       mobile: '9822001122',

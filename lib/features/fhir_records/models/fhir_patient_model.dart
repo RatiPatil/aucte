@@ -70,11 +70,6 @@ class FhirPatientModel {
           "country": "India",
         },
       ],
-      "meta": {
-        "profile": [
-          "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Patient",
-        ],
-      },
     };
   }
 

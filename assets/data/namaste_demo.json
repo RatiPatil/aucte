@@ -1,7 +1,7 @@
 {
   "dataset": {
     "name": "AUCTE Demo Terminology Dataset",
-    "version": "demo-1.0",
+    "version": "demo-2.0",
     "recordCount": 100,
     "isDemo": true,
     "description": "Educational demonstration dataset connecting AYUSH NAMASTE terms with WHO ICD-11 TM2 and biomedical codes for SIH prototype."
@@ -18,9 +18,10 @@
       "biomedicineCode": "DEMO-BIO-R50.9",
       "biomedicineTitle": "Fever, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Jvara"
     },
     {
       "id": "TERM-AYU-002",
@@ -33,9 +34,10 @@
       "biomedicineCode": "DEMO-BIO-R05",
       "biomedicineTitle": "Cough",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Kasa"
     },
     {
       "id": "TERM-AYU-003",
@@ -48,9 +50,10 @@
       "biomedicineCode": "DEMO-BIO-K29.7",
       "biomedicineTitle": "Gastritis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Amlapitta"
     },
     {
       "id": "TERM-AYU-004",
@@ -63,9 +66,10 @@
       "biomedicineCode": "DEMO-BIO-M19.9",
       "biomedicineTitle": "Osteoarthritis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Sandhivata"
     },
     {
       "id": "TERM-AYU-005",
@@ -78,9 +82,10 @@
       "biomedicineCode": "DEMO-BIO-E11.9",
       "biomedicineTitle": "Type 2 diabetes mellitus without complications",
       "mappingType": "demo",
-      "mappingConfidence": 0.95,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Prameha"
     },
     {
       "id": "TERM-AYU-006",
@@ -93,9 +98,10 @@
       "biomedicineCode": "DEMO-BIO-J45.9",
       "biomedicineTitle": "Asthma, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Tamaka Shwasa"
     },
     {
       "id": "TERM-AYU-007",
@@ -108,9 +114,10 @@
       "biomedicineCode": "DEMO-BIO-K58.9",
       "biomedicineTitle": "Irritable bowel syndrome without diarrhea",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Grahani Roga"
     },
     {
       "id": "TERM-AYU-008",
@@ -123,9 +130,10 @@
       "biomedicineCode": "DEMO-BIO-G44.2",
       "biomedicineTitle": "Tension-type headache, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Shirashoola"
     },
     {
       "id": "TERM-AYU-009",
@@ -138,9 +146,10 @@
       "biomedicineCode": "DEMO-BIO-R17",
       "biomedicineTitle": "Unspecified jaundice",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Kamala"
     },
     {
       "id": "TERM-AYU-010",
@@ -153,9 +162,10 @@
       "biomedicineCode": "DEMO-BIO-D64.9",
       "biomedicineTitle": "Anemia, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Pandu Roga"
     },
     {
       "id": "TERM-AYU-011",
@@ -168,9 +178,10 @@
       "biomedicineCode": "DEMO-BIO-A09.9",
       "biomedicineTitle": "Gastroenteritis and colitis of unspecified origin",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Atisara"
     },
     {
       "id": "TERM-AYU-012",
@@ -183,9 +194,10 @@
       "biomedicineCode": "DEMO-BIO-M10.9",
       "biomedicineTitle": "Gout, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Vatarakta"
     },
     {
       "id": "TERM-AYU-013",
@@ -198,9 +210,10 @@
       "biomedicineCode": "DEMO-BIO-K64.9",
       "biomedicineTitle": "Hemorrhoids, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Arshas"
     },
     {
       "id": "TERM-AYU-014",
@@ -213,9 +226,10 @@
       "biomedicineCode": "DEMO-BIO-L40.9",
       "biomedicineTitle": "Psoriasis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.86,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Kushtha"
     },
     {
       "id": "TERM-AYU-015",
@@ -228,9 +242,10 @@
       "biomedicineCode": "DEMO-BIO-M54.3",
       "biomedicineTitle": "Sciatica",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Gridhrasi"
     },
     {
       "id": "TERM-AYU-016",
@@ -243,9 +258,10 @@
       "biomedicineCode": "DEMO-BIO-A46",
       "biomedicineTitle": "Erysipelas",
       "mappingType": "demo",
-      "mappingConfidence": 0.85,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Visarpa"
     },
     {
       "id": "TERM-AYU-017",
@@ -258,9 +274,10 @@
       "biomedicineCode": "DEMO-BIO-F29",
       "biomedicineTitle": "Unspecified nonorganic psychosis",
       "mappingType": "demo",
-      "mappingConfidence": 0.82,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Unmada"
     },
     {
       "id": "TERM-AYU-018",
@@ -273,9 +290,10 @@
       "biomedicineCode": "DEMO-BIO-G40.9",
       "biomedicineTitle": "Epilepsy, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Apasmara"
     },
     {
       "id": "TERM-AYU-019",
@@ -288,9 +306,10 @@
       "biomedicineCode": "DEMO-BIO-R30.0",
       "biomedicineTitle": "Dysuria",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Mutrakrichra"
     },
     {
       "id": "TERM-AYU-020",
@@ -303,9 +322,10 @@
       "biomedicineCode": "DEMO-BIO-N20.9",
       "biomedicineTitle": "Urinary calculus, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Mutrashmari"
     },
     {
       "id": "TERM-AYU-021",
@@ -318,9 +338,10 @@
       "biomedicineCode": "DEMO-BIO-E66.9",
       "biomedicineTitle": "Obesity, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Sthoulya"
     },
     {
       "id": "TERM-AYU-022",
@@ -333,9 +354,10 @@
       "biomedicineCode": "DEMO-BIO-I20.9",
       "biomedicineTitle": "Angina pectoris, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.84,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Hridroga"
     },
     {
       "id": "TERM-AYU-023",
@@ -348,9 +370,10 @@
       "biomedicineCode": "DEMO-BIO-R58",
       "biomedicineTitle": "Hemorrhage, not elsewhere classified",
       "mappingType": "demo",
-      "mappingConfidence": 0.81,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Raktapitta"
     },
     {
       "id": "TERM-AYU-024",
@@ -363,9 +386,10 @@
       "biomedicineCode": "DEMO-BIO-I69.4",
       "biomedicineTitle": "Sequelae of stroke, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Vatavyadhi"
     },
     {
       "id": "TERM-AYU-025",
@@ -378,9 +402,10 @@
       "biomedicineCode": "DEMO-BIO-B82.9",
       "biomedicineTitle": "Intestinal parasitism, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Krimi Roga"
     },
     {
       "id": "TERM-AYU-026",
@@ -393,9 +418,10 @@
       "biomedicineCode": "DEMO-BIO-R60.0",
       "biomedicineTitle": "Localized edema",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Shotha"
     },
     {
       "id": "TERM-AYU-027",
@@ -408,9 +434,10 @@
       "biomedicineCode": "DEMO-BIO-J30.9",
       "biomedicineTitle": "Allergic rhinitis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Pratishyaya"
     },
     {
       "id": "TERM-AYU-028",
@@ -423,9 +450,10 @@
       "biomedicineCode": "DEMO-BIO-K12.0",
       "biomedicineTitle": "Recurrent aphthous stomatitis",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Mukhapaka"
     },
     {
       "id": "TERM-AYU-029",
@@ -438,9 +466,10 @@
       "biomedicineCode": "DEMO-BIO-H92.0",
       "biomedicineTitle": "Otalgia",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Karnasura"
     },
     {
       "id": "TERM-AYU-030",
@@ -453,9 +482,10 @@
       "biomedicineCode": "DEMO-BIO-H10.9",
       "biomedicineTitle": "Conjunctivitis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Netrabhisyanda"
     },
     {
       "id": "TERM-AYU-031",
@@ -468,9 +498,10 @@
       "biomedicineCode": "DEMO-BIO-R14.0",
       "biomedicineTitle": "Abdominal distension (gaseous)",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Anaha"
     },
     {
       "id": "TERM-AYU-032",
@@ -483,9 +514,10 @@
       "biomedicineCode": "DEMO-BIO-N50.89",
       "biomedicineTitle": "Other specified disorders of male genital organs",
       "mappingType": "demo",
-      "mappingConfidence": 0.80,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Vrasana Shoola"
     },
     {
       "id": "TERM-AYU-033",
@@ -498,9 +530,10 @@
       "biomedicineCode": "DEMO-BIO-N89.8",
       "biomedicineTitle": "Other specified noninflammatory disorders of vagina",
       "mappingType": "demo",
-      "mappingConfidence": 0.86,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Pradara"
     },
     {
       "id": "TERM-AYU-034",
@@ -513,9 +546,10 @@
       "biomedicineCode": "DEMO-BIO-N92.0",
       "biomedicineTitle": "Excessive and frequent menstruation with regular cycle",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Pradara"
     },
     {
       "id": "TERM-AYU-035",
@@ -528,9 +562,10 @@
       "biomedicineCode": "DEMO-BIO-N94.6",
       "biomedicineTitle": "Dysmenorrhea, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Kashtartava"
     },
     {
       "id": "TERM-AYU-036",
@@ -543,9 +578,10 @@
       "biomedicineCode": "DEMO-BIO-R11.10",
       "biomedicineTitle": "Vomiting, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Katu Chhardi"
     },
     {
       "id": "TERM-AYU-037",
@@ -558,9 +594,10 @@
       "biomedicineCode": "DEMO-BIO-L30.9",
       "biomedicineTitle": "Dermatitis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Vicharchika"
     },
     {
       "id": "TERM-AYU-038",
@@ -573,9 +610,10 @@
       "biomedicineCode": "DEMO-BIO-B35.9",
       "biomedicineTitle": "Dermatophytosis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Dadru Kushtha"
     },
     {
       "id": "TERM-AYU-039",
@@ -588,9 +626,10 @@
       "biomedicineCode": "DEMO-BIO-L50.9",
       "biomedicineTitle": "Urticaria, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Shitapitta"
     },
     {
       "id": "TERM-AYU-040",
@@ -603,11 +642,11 @@
       "biomedicineCode": "DEMO-BIO-H92.10",
       "biomedicineTitle": "Otorrhea, unspecified ear",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": "Karna Srava"
     },
-
     {
       "id": "TERM-SID-001",
       "namasteCode": "DEMO-NAM-SID-001",
@@ -619,9 +658,10 @@
       "biomedicineCode": "DEMO-BIO-R50.9",
       "biomedicineTitle": "Fever, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-002",
@@ -634,9 +674,10 @@
       "biomedicineCode": "DEMO-BIO-R05",
       "biomedicineTitle": "Cough",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-003",
@@ -649,9 +690,10 @@
       "biomedicineCode": "DEMO-BIO-J45.9",
       "biomedicineTitle": "Asthma, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-004",
@@ -664,9 +706,10 @@
       "biomedicineCode": "DEMO-BIO-K27.9",
       "biomedicineTitle": "Peptic ulcer, site unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-005",
@@ -679,9 +722,10 @@
       "biomedicineCode": "DEMO-BIO-E11.9",
       "biomedicineTitle": "Type 2 diabetes mellitus without complications",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-006",
@@ -694,9 +738,10 @@
       "biomedicineCode": "DEMO-BIO-M06.9",
       "biomedicineTitle": "Rheumatoid arthritis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-007",
@@ -709,9 +754,10 @@
       "biomedicineCode": "DEMO-BIO-M54.4",
       "biomedicineTitle": "Lumbago with sciatica",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-008",
@@ -724,9 +770,10 @@
       "biomedicineCode": "DEMO-BIO-K64.8",
       "biomedicineTitle": "Other specified hemorrhoids",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-009",
@@ -739,9 +786,10 @@
       "biomedicineCode": "DEMO-BIO-L20.9",
       "biomedicineTitle": "Atopic dermatitis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-010",
@@ -754,9 +802,10 @@
       "biomedicineCode": "DEMO-BIO-B86",
       "biomedicineTitle": "Scabies",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-011",
@@ -769,9 +818,10 @@
       "biomedicineCode": "DEMO-BIO-N20.0",
       "biomedicineTitle": "Calculus of kidney",
       "mappingType": "demo",
-      "mappingConfidence": 0.95,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-012",
@@ -784,9 +834,10 @@
       "biomedicineCode": "DEMO-BIO-R30.9",
       "biomedicineTitle": "Painful micturition, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-013",
@@ -799,9 +850,10 @@
       "biomedicineCode": "DEMO-BIO-K76.9",
       "biomedicineTitle": "Liver disease, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-014",
@@ -814,9 +866,10 @@
       "biomedicineCode": "DEMO-BIO-I10",
       "biomedicineTitle": "Essential (primary) hypertension",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-015",
@@ -829,9 +882,10 @@
       "biomedicineCode": "DEMO-BIO-G43.909",
       "biomedicineTitle": "Migraine, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-016",
@@ -844,9 +898,10 @@
       "biomedicineCode": "DEMO-BIO-N92.6",
       "biomedicineTitle": "Irregular menstruation, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-017",
@@ -859,9 +914,10 @@
       "biomedicineCode": "DEMO-BIO-N76.0",
       "biomedicineTitle": "Acute vaginitis",
       "mappingType": "demo",
-      "mappingConfidence": 0.86,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-018",
@@ -874,9 +930,10 @@
       "biomedicineCode": "DEMO-BIO-R31.9",
       "biomedicineTitle": "Hematuria, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.85,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-019",
@@ -889,9 +946,10 @@
       "biomedicineCode": "DEMO-BIO-R11.0",
       "biomedicineTitle": "Nausea",
       "mappingType": "demo",
-      "mappingConfidence": 0.84,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-020",
@@ -904,9 +962,10 @@
       "biomedicineCode": "DEMO-BIO-K40.90",
       "biomedicineTitle": "Inguinal hernia, without obstruction or gangrene",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-021",
@@ -919,9 +978,10 @@
       "biomedicineCode": "DEMO-BIO-A09.0",
       "biomedicineTitle": "Other and unspecified gastroenteritis and colitis of infectious origin",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-022",
@@ -934,9 +994,10 @@
       "biomedicineCode": "DEMO-BIO-K59.1",
       "biomedicineTitle": "Functional diarrhea",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-023",
@@ -949,9 +1010,10 @@
       "biomedicineCode": "DEMO-BIO-R16.1",
       "biomedicineTitle": "Splenomegaly, not elsewhere classified",
       "mappingType": "demo",
-      "mappingConfidence": 0.83,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-024",
@@ -964,9 +1026,10 @@
       "biomedicineCode": "DEMO-BIO-R60.1",
       "biomedicineTitle": "Generalized edema",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-025",
@@ -979,9 +1042,10 @@
       "biomedicineCode": "DEMO-BIO-G20",
       "biomedicineTitle": "Parkinson's disease",
       "mappingType": "demo",
-      "mappingConfidence": 0.85,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-026",
@@ -994,9 +1058,10 @@
       "biomedicineCode": "DEMO-BIO-G51.0",
       "biomedicineTitle": "Bell's palsy",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-027",
@@ -1009,9 +1074,10 @@
       "biomedicineCode": "DEMO-BIO-F32.9",
       "biomedicineTitle": "Major depressive disorder, single episode, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.81,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-028",
@@ -1024,9 +1090,10 @@
       "biomedicineCode": "DEMO-BIO-L03.90",
       "biomedicineTitle": "Cellulitis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.84,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-029",
@@ -1039,9 +1106,10 @@
       "biomedicineCode": "DEMO-BIO-M47.812",
       "biomedicineTitle": "Spondylosis without myelopathy or radiculopathy, cervical region",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-SID-030",
@@ -1054,11 +1122,11 @@
       "biomedicineCode": "DEMO-BIO-B74.9",
       "biomedicineTitle": "Filariasis, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
-
     {
       "id": "TERM-UNA-001",
       "namasteCode": "DEMO-NAM-UNA-001",
@@ -1070,9 +1138,10 @@
       "biomedicineCode": "DEMO-BIO-R50.9",
       "biomedicineTitle": "Fever, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-002",
@@ -1085,9 +1154,10 @@
       "biomedicineCode": "DEMO-BIO-K30",
       "biomedicineTitle": "Functional dyspepsia",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-003",
@@ -1100,9 +1170,10 @@
       "biomedicineCode": "DEMO-BIO-R05",
       "biomedicineTitle": "Cough",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-004",
@@ -1115,9 +1186,10 @@
       "biomedicineCode": "DEMO-BIO-J45.9",
       "biomedicineTitle": "Asthma, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-005",
@@ -1130,9 +1202,10 @@
       "biomedicineCode": "DEMO-BIO-E11.9",
       "biomedicineTitle": "Type 2 diabetes mellitus without complications",
       "mappingType": "demo",
-      "mappingConfidence": 0.96,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-006",
@@ -1145,9 +1218,10 @@
       "biomedicineCode": "DEMO-BIO-M25.50",
       "biomedicineTitle": "Pain in unspecified joint",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-007",
@@ -1160,9 +1234,10 @@
       "biomedicineCode": "DEMO-BIO-M10.00",
       "biomedicineTitle": "Idiopathic gout, unspecified site",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-008",
@@ -1175,9 +1250,10 @@
       "biomedicineCode": "DEMO-BIO-M54.30",
       "biomedicineTitle": "Sciatica, unspecified side",
       "mappingType": "demo",
-      "mappingConfidence": 0.95,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-009",
@@ -1190,9 +1266,10 @@
       "biomedicineCode": "DEMO-BIO-G43.9",
       "biomedicineTitle": "Migraine, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-010",
@@ -1205,9 +1282,10 @@
       "biomedicineCode": "DEMO-BIO-R17",
       "biomedicineTitle": "Unspecified jaundice",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-011",
@@ -1220,9 +1298,10 @@
       "biomedicineCode": "DEMO-BIO-D50.9",
       "biomedicineTitle": "Iron deficiency anemia, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-012",
@@ -1235,9 +1314,10 @@
       "biomedicineCode": "DEMO-BIO-R18.8",
       "biomedicineTitle": "Other ascites",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-013",
@@ -1250,9 +1330,10 @@
       "biomedicineCode": "DEMO-BIO-K64.9",
       "biomedicineTitle": "Hemorrhoids, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-014",
@@ -1265,9 +1346,10 @@
       "biomedicineCode": "DEMO-BIO-L29.9",
       "biomedicineTitle": "Pruritus, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.86,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-015",
@@ -1280,9 +1362,10 @@
       "biomedicineCode": "DEMO-BIO-L50.0",
       "biomedicineTitle": "Allergic urticaria",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-016",
@@ -1295,9 +1378,10 @@
       "biomedicineCode": "DEMO-BIO-R30.0",
       "biomedicineTitle": "Dysuria",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-017",
@@ -1310,9 +1394,10 @@
       "biomedicineCode": "DEMO-BIO-N20.0",
       "biomedicineTitle": "Calculus of kidney",
       "mappingType": "demo",
-      "mappingConfidence": 0.95,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-018",
@@ -1325,9 +1410,10 @@
       "biomedicineCode": "DEMO-BIO-J00",
       "biomedicineTitle": "Acute nasopharyngitis [common cold]",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-019",
@@ -1340,9 +1426,10 @@
       "biomedicineCode": "DEMO-BIO-H92.09",
       "biomedicineTitle": "Otalgia, unspecified ear",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-020",
@@ -1355,9 +1442,10 @@
       "biomedicineCode": "DEMO-BIO-H10.10",
       "biomedicineTitle": "Acute atopic conjunctivitis",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-021",
@@ -1370,9 +1458,10 @@
       "biomedicineCode": "DEMO-BIO-K12.1",
       "biomedicineTitle": "Other forms of stomatitis",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-022",
@@ -1385,9 +1474,10 @@
       "biomedicineCode": "DEMO-BIO-R00.2",
       "biomedicineTitle": "Palpitations",
       "mappingType": "demo",
-      "mappingConfidence": 0.89,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-023",
@@ -1400,9 +1490,10 @@
       "biomedicineCode": "DEMO-BIO-G81.90",
       "biomedicineTitle": "Hemiplegia, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.94,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-024",
@@ -1415,9 +1506,10 @@
       "biomedicineCode": "DEMO-BIO-G51.0",
       "biomedicineTitle": "Bell's palsy",
       "mappingType": "demo",
-      "mappingConfidence": 0.93,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-025",
@@ -1430,9 +1522,10 @@
       "biomedicineCode": "DEMO-BIO-G40.909",
       "biomedicineTitle": "Epilepsy, unspecified, not intractable",
       "mappingType": "demo",
-      "mappingConfidence": 0.91,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-026",
@@ -1445,9 +1538,10 @@
       "biomedicineCode": "DEMO-BIO-F34.1",
       "biomedicineTitle": "Dysthymic disorder",
       "mappingType": "demo",
-      "mappingConfidence": 0.83,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-027",
@@ -1460,9 +1554,10 @@
       "biomedicineCode": "DEMO-BIO-N94.6",
       "biomedicineTitle": "Dysmenorrhea, unspecified",
       "mappingType": "demo",
-      "mappingConfidence": 0.92,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-028",
@@ -1475,9 +1570,10 @@
       "biomedicineCode": "DEMO-BIO-N92.0",
       "biomedicineTitle": "Excessive and frequent menstruation",
       "mappingType": "demo",
-      "mappingConfidence": 0.90,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-029",
@@ -1490,9 +1586,10 @@
       "biomedicineCode": "DEMO-BIO-N89.8",
       "biomedicineTitle": "Other specified noninflammatory disorders of vagina",
       "mappingType": "demo",
-      "mappingConfidence": 0.87,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     },
     {
       "id": "TERM-UNA-030",
@@ -1505,9 +1602,10 @@
       "biomedicineCode": "DEMO-BIO-R07.1",
       "biomedicineTitle": "Chest pain on breathing",
       "mappingType": "demo",
-      "mappingConfidence": 0.88,
+      "mappingConfidence": 0,
       "source": "AUCTE SIH demonstration dataset",
-      "isDemo": true
+      "isDemo": true,
+      "whoTerm": ""
     }
   ]
 }

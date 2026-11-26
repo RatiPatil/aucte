@@ -332,17 +332,34 @@ class FirebaseAuthRepository implements AuthRepository {
     return practitioner;
   }
 
+  static const demoPractitionerId = 'DEMO-PRACT-001';
+
+  Future<void> startDemoSession() => _persistSession(
+    practitioner: PractitionerModel(
+      id: demoPractitionerId,
+      fullName: 'Dr. AUCTE Demo',
+      email: 'demo@aucte.example',
+      mobile: '',
+      practitionerId: demoPractitionerId,
+      ayushSystem: 'Ayurveda',
+      institution: 'AUCTE Demonstration',
+      password: '',
+      createdAt: DateTime.now(),
+    ),
+    rememberMe: false,
+  );
+
   Future<void> _persistSession({
     required PractitionerModel practitioner,
     required bool rememberMe,
     String? identifier,
   }) async {
-    await _storage.setBool(StorageKeys.isLoggedIn, true);
     await _storage.setString(
       StorageKeys.currentPractitioner,
       practitioner.toJson(),
     );
     await _storage.setBool(StorageKeys.rememberLogin, rememberMe);
+    await _storage.setBool(StorageKeys.isLoggedIn, true);
 
     if (rememberMe && (identifier != null || practitioner.email.isNotEmpty)) {
       await _storage.setString(

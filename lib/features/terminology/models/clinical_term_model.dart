@@ -15,6 +15,7 @@ class ClinicalTermModel {
     required this.mappingConfidence,
     required this.source,
     required this.isDemo,
+    this.whoTerm = '',
   });
 
   final String id;
@@ -30,6 +31,7 @@ class ClinicalTermModel {
   final double mappingConfidence;
   final String source;
   final bool isDemo;
+  final String whoTerm;
 
   Map<String, dynamic> toMap() {
     return {
@@ -46,6 +48,7 @@ class ClinicalTermModel {
       'mappingConfidence': mappingConfidence,
       'source': source,
       'isDemo': isDemo,
+      'whoTerm': whoTerm,
     };
   }
 
@@ -64,6 +67,7 @@ class ClinicalTermModel {
       mappingConfidence: (map['mappingConfidence'] as num?)?.toDouble() ?? 0.90,
       source: map['source']?.toString() ?? 'AUCTE SIH demonstration dataset',
       isDemo: map['isDemo'] as bool? ?? true,
+      whoTerm: map['whoTerm']?.toString() ?? '',
     );
   }
 
@@ -104,6 +108,7 @@ class ClinicalTermModel {
       mappingConfidence: mappingConfidence ?? this.mappingConfidence,
       source: source ?? this.source,
       isDemo: isDemo ?? this.isDemo,
+      whoTerm: whoTerm,
     );
   }
 }

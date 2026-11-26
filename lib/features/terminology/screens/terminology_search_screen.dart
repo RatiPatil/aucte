@@ -4,7 +4,9 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/clinical_term_model.dart';
+import '../../authentication/repositories/firebase_auth_repository.dart';
 import '../repositories/firestore_terminology_repository.dart';
+import '../repositories/local_terminology_repository.dart';
 import '../repositories/terminology_repository.dart';
 
 /// The primary SIH terminology search screen.
@@ -23,7 +25,11 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
     with SingleTickerProviderStateMixin {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
-  final TerminologyRepository _repo = FirestoreTerminologyRepository.instance;
+  TerminologyRepository get _repo =>
+      FirebaseAuthRepository.instance.getCurrentPractitioner()?.id ==
+          FirebaseAuthRepository.demoPractitionerId
+      ? LocalTerminologyRepository.instance
+      : FirestoreTerminologyRepository.instance;
 
   List<ClinicalTermModel> _allTerms = [];
   List<ClinicalTermModel> _filteredTerms = [];
@@ -93,6 +99,9 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
       if (!sysMatch) return false;
       return t.namasteTerm.toLowerCase().contains(q) ||
           t.namasteCode.toLowerCase().contains(q) ||
+          t.whoTerm.toLowerCase().contains(q) ||
+          t.tm2Code.toLowerCase().contains(q) ||
+          t.biomedicineCode.toLowerCase().contains(q) ||
           t.tm2Title.toLowerCase().contains(q) ||
           t.biomedicineTitle.toLowerCase().contains(q) ||
           t.description.toLowerCase().contains(q);
@@ -451,6 +460,9 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
             ),
             const SizedBox(height: 12),
             Text(term.description, style: AppTextStyles.bodyMedium),
+            if (term.whoTerm.isNotEmpty)
+              Text('WHO Ayurveda term (sample): ${term.whoTerm}',
+                  style: AppTextStyles.bodySmall),
 
             const SizedBox(height: 28),
 
@@ -545,7 +557,7 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
                   const Divider(height: 16),
                   _MetaRow(
                     label: 'Confidence',
-                    value: '${(term.mappingConfidence * 100).toInt()}%',
+                    value: term.isDemo ? 'Synthetic' : '${(term.mappingConfidence * 100).toInt()}%',
                     valueColor: term.mappingConfidence >= 0.9
                         ? AppColors.success
                         : AppColors.warning,
@@ -707,7 +719,7 @@ class _TermResultTile extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  '${(term.mappingConfidence * 100).toInt()}% confidence',
+                  term.isDemo ? 'Synthetic mapping' : '${(term.mappingConfidence * 100).toInt()}% confidence',
                   style: AppTextStyles.caption.copyWith(
                     color: term.mappingConfidence >= 0.9
                         ? AppColors.success

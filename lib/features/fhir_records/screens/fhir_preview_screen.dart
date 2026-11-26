@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/services/demo_api.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../authentication/models/practitioner_model.dart';
@@ -46,6 +47,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
   String _jsonContent = '';
   String _screenTitle = 'FHIR R4 Preview';
   bool _isLoading = true;
+  bool _uploading = false;
 
   @override
   void initState() {
@@ -109,7 +111,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
     if (bundle != null) {
       _bundle = bundle;
       _jsonContent = bundle.toFormattedJson();
-      _screenTitle = title ?? 'FHIR Document Bundle';
+      _screenTitle = title ?? 'FHIR Collection Bundle';
     } else if (encounter != null) {
       // Find or build bundle for encounter
       final existing = await LocalFhirRecordRepository.instance
@@ -193,10 +195,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
       _jsonContent = '''{
   "resourceType": "Bundle",
   "id": "auc-bundle-demo",
-  "type": "document",
-  "meta": {
-    "profile": ["https://aucte.ayush.gov.in/fhir/StructureDefinition/aucte-clinical-document"]
-  },
+  "type": "collection",
   "entry": []
 }''';
       _screenTitle = title ?? 'FHIR R4 Bundle';
@@ -207,6 +206,29 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
         _isLoading = false;
       });
     }
+  }
+
+  Future<void> _uploadBundle() async {
+    final bundle = _bundle;
+    if (bundle == null || bundle.consent?.status != 'active') {
+      _uploadMessage('Grant consent in the encounter before uploading.');
+      return;
+    }
+    setState(() => _uploading = true);
+    try {
+      await DemoApi.upload(bundle.toFormattedJson());
+      if (mounted) _uploadMessage('Sample Bundle accepted by the demo API.');
+    } on FormatException catch (error) {
+      if (mounted) _uploadMessage(error.message);
+    } catch (_) {
+      if (mounted) _uploadMessage('Could not reach the demo API. Try again.');
+    } finally {
+      if (mounted) setState(() => _uploading = false);
+    }
+  }
+
+  void _uploadMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _copyToClipboard() {
@@ -230,6 +252,14 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
+          if (DemoApi.configured &&
+              _bundle?.practitioner.id == 'DEMO-PRACT-001' &&
+              (_bundle?.patient.id.startsWith('AUC-PAT-') ?? false))
+            IconButton(
+              icon: const Icon(Icons.cloud_upload_outlined),
+              tooltip: 'Upload sample Bundle',
+              onPressed: _uploading ? null : _uploadBundle,
+            ),
           IconButton(
             icon: const Icon(Icons.copy_rounded),
             tooltip: 'Copy FHIR JSON',

@@ -11,7 +11,7 @@ class FhirBundleModel {
   const FhirBundleModel({
     required this.id,
     this.resourceType = 'Bundle',
-    this.type = 'document',
+    this.type = 'collection',
     required this.timestamp,
     required this.profileUrl,
     required this.patient,
@@ -55,26 +55,26 @@ class FhirBundleModel {
 
     // 1. Patient Entry
     entries.add({
-      "fullUrl": "urn:uuid:${patient.id}",
+      "fullUrl": "https://aucte.example/fhir/Patient/${patient.id}",
       "resource": patient.toFhirResource(),
     });
 
     // 2. Practitioner Entry
     entries.add({
-      "fullUrl": "urn:uuid:${practitioner.id}",
+      "fullUrl": "https://aucte.example/fhir/Practitioner/${practitioner.id}",
       "resource": practitioner.toFhirResource(),
     });
 
     // 3. Encounter Entry
     entries.add({
-      "fullUrl": "urn:uuid:${encounter.id}",
+      "fullUrl": "https://aucte.example/fhir/Encounter/${encounter.id}",
       "resource": encounter.toFhirResource(),
     });
 
     // 4. Condition Entries (Dual-Coded)
     for (final cond in conditions) {
       entries.add({
-        "fullUrl": "urn:uuid:${cond.id}",
+        "fullUrl": "https://aucte.example/fhir/Condition/${cond.id}",
         "resource": cond.toFhirResource(),
       });
     }
@@ -82,7 +82,7 @@ class FhirBundleModel {
     // 5. Consent Entry if present
     if (consent != null) {
       entries.add({
-        "fullUrl": "urn:uuid:${consent!.id}",
+        "fullUrl": "https://aucte.example/fhir/Consent/${consent!.id}",
         "resource": consent!.toFhirResource(),
       });
     }
@@ -90,7 +90,7 @@ class FhirBundleModel {
     // 6. Observation Entries if present
     for (final obs in observations) {
       entries.add({
-        "fullUrl": "urn:uuid:${obs.id}",
+        "fullUrl": "https://aucte.example/fhir/Observation/${obs.id}",
         "resource": obs.toFhirResource(),
       });
     }
@@ -98,12 +98,11 @@ class FhirBundleModel {
     return {
       "resourceType": "Bundle",
       "id": id,
-      "type": type,
-      "timestamp": timestamp.toIso8601String(),
+      "type": "collection",
+      "timestamp": timestamp.toUtc().toIso8601String(),
       "meta": {
-        "profile": [profileUrl],
         "versionId": "1",
-        "lastUpdated": DateTime.now().toIso8601String(),
+        "lastUpdated": timestamp.toUtc().toIso8601String(),
       },
       "entry": entries,
     };
@@ -118,7 +117,7 @@ class FhirBundleModel {
   /// Construct typed model from standard FHIR Bundle JSON Map
   factory FhirBundleModel.fromFhirMap(Map<String, dynamic> map) {
     final id = map['id']?.toString() ?? 'auc-bundle-generic';
-    final type = map['type']?.toString() ?? 'document';
+    final type = map['type']?.toString() ?? 'collection';
     final timestamp = DateTime.tryParse(map['timestamp']?.toString() ?? '') ??
         DateTime.now();
 
@@ -196,7 +195,7 @@ class FhirBundleModel {
           "class": {"code": "AMB", "display": "ambulatory"},
           "subject": {"reference": "Patient/${safePatient.id}"},
           "participant": [],
-          "period": {"start": timestamp.toIso8601String()},
+          "period": {"start": timestamp.toUtc().toIso8601String()},
           "reasonCode": [],
         });
 

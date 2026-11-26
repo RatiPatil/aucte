@@ -53,11 +53,6 @@ class FhirPractitionerModel {
           },
         },
       ],
-      "meta": {
-        "profile": [
-          "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Practitioner",
-        ],
-      },
     };
   }
 

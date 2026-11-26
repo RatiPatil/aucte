@@ -28,7 +28,7 @@ class FhirEncounterModel {
     return {
       "resourceType": "Encounter",
       "id": id,
-      "status": status,
+      "status": status == "completed" ? "finished" : status,
       "class": encounterClass.toMap(),
       "subject": subject.toMap(),
       "participant": participants
@@ -42,11 +42,6 @@ class FhirEncounterModel {
                 "text": r,
               })
           .toList(),
-      "meta": {
-        "profile": [
-          "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Encounter",
-        ],
-      },
     };
   }
 
@@ -57,7 +52,7 @@ class FhirEncounterModel {
   }) {
     return FhirEncounterModel(
       id: encounter.id,
-      status: encounter.status,
+      status: encounter.status == 'completed' ? 'finished' : encounter.status,
       encounterClass: const FhirCoding(
         system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
         code: "AMB",

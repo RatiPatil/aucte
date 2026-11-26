@@ -13,6 +13,7 @@ class FhirConsentModel {
     required this.patient,
     required this.dateTime,
     required this.purposeText,
+    this.version = '1.0',
   });
 
   final String id;
@@ -23,6 +24,7 @@ class FhirConsentModel {
   final FhirReference patient;
   final DateTime dateTime;
   final String purposeText;
+  final String version;
 
   Map<String, dynamic> toFhirResource() {
     return {
@@ -32,14 +34,12 @@ class FhirConsentModel {
       "scope": scope.toMap(),
       "category": [category.toMap()],
       "patient": patient.toMap(),
-      "dateTime": dateTime.toIso8601String(),
+      "dateTime": dateTime.toUtc().toIso8601String(),
       "policyRule": {
         "text": purposeText,
       },
       "meta": {
-        "profile": [
-          "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Consent",
-        ],
+        "versionId": version,
       },
     };
   }
@@ -76,6 +76,7 @@ class FhirConsentModel {
       ),
       dateTime: consent.grantedAt,
       purposeText: consent.purpose,
+      version: consent.version,
     );
   }
 
@@ -102,6 +103,7 @@ class FhirConsentModel {
       patient: patient,
       dateTime: DateTime.tryParse(map['dateTime']?.toString() ?? '') ?? DateTime.now(),
       purposeText: purpose,
+      version: (map['meta'] as Map?)?['versionId']?.toString() ?? '1.0',
     );
   }
 
