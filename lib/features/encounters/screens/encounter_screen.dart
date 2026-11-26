@@ -37,7 +37,7 @@ class _EncounterScreenState extends State<EncounterScreen> {
   final List<ClinicalTermModel> _selectedDiagnoses = [];
   String _termSearchQuery = '';
 
-  bool _consentGranted = true;
+  bool _consentGranted = false;
   bool _isLoading = true;
 
   @override
@@ -128,7 +128,8 @@ class _EncounterScreenState extends State<EncounterScreen> {
           )
         : null;
 
-    final pract = practitioner ??
+    final pract =
+        practitioner ??
         PractitionerModel(
           id: 'DEMO-PRACT-001',
           fullName: 'Dr. AYUSH Specialist',
@@ -168,6 +169,18 @@ class _EncounterScreenState extends State<EncounterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final query = _termSearchQuery.trim().toLowerCase();
+    final filteredTerms = _availableTerms
+        .where(
+          (term) =>
+              term.namasteTerm.toLowerCase().contains(query) ||
+              term.namasteCode.toLowerCase().contains(query) ||
+              term.whoTerm.toLowerCase().contains(query) ||
+              term.tm2Code.toLowerCase().contains(query) ||
+              term.biomedicineCode.toLowerCase().contains(query),
+        )
+        .toList();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -207,6 +220,7 @@ class _EncounterScreenState extends State<EncounterScreen> {
                   }
                 },
                 controlsBuilder: (context, details) {
+                  if (!details.isActive) return const SizedBox.shrink();
                   return Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: Row(
@@ -265,6 +279,7 @@ class _EncounterScreenState extends State<EncounterScreen> {
                       children: [
                         DropdownButtonFormField<PatientModel>(
                           initialValue: _selectedPatient,
+                          isExpanded: true,
                           decoration: const InputDecoration(
                             labelText: 'Patient',
                             prefixIcon: Icon(Icons.person_outline),
@@ -274,6 +289,7 @@ class _EncounterScreenState extends State<EncounterScreen> {
                               value: p,
                               child: Text(
                                 '${p.fullName} (${p.gender}, ${p.age}y)',
+                                overflow: TextOverflow.ellipsis,
                               ),
                             );
                           }).toList(),
@@ -345,77 +361,57 @@ class _EncounterScreenState extends State<EncounterScreen> {
                             });
                           },
                           decoration: const InputDecoration(
-                            hintText: 'Search 100 demo terminology records...',
+                            hintText: 'Search diagnosis or code…',
                             prefixIcon: Icon(Icons.search_rounded),
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Container(
+                        SizedBox(
                           height: 220,
-                          decoration: BoxDecoration(
+                          child: Material(
                             color: AppColors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: ListView.builder(
-                            itemCount: _availableTerms
-                                .where(
-                                  (t) =>
-                                      _termSearchQuery.isEmpty ||
-                                      t.namasteTerm.toLowerCase().contains(
-                                        _termSearchQuery.toLowerCase(),
-                                      ) ||
-                                      t.namasteCode.toLowerCase().contains(
-                                        _termSearchQuery.toLowerCase(),
-                                      ),
-                                )
-                                .length,
-                            itemBuilder: (context, index) {
-                              final filtered = _availableTerms
-                                  .where(
-                                    (t) =>
-                                        _termSearchQuery.isEmpty ||
-                                        t.namasteTerm.toLowerCase().contains(
-                                          _termSearchQuery.toLowerCase(),
-                                        ) ||
-                                        t.namasteCode.toLowerCase().contains(
-                                          _termSearchQuery.toLowerCase(),
-                                        ),
-                                  )
-                                  .toList();
-                              final term = filtered[index];
-                              final isSelected = _selectedDiagnoses.any(
-                                (d) => d.id == term.id,
-                              );
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: const BorderSide(color: AppColors.border),
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            child: ListView.builder(
+                              itemCount: filteredTerms.length,
+                              itemBuilder: (context, index) {
+                                final term = filteredTerms[index];
+                                final isSelected = _selectedDiagnoses.any(
+                                  (d) => d.id == term.id,
+                                );
 
-                              return CheckboxListTile(
-                                value: isSelected,
-                                activeColor: AppColors.primary,
-                                title: Text(
-                                  '${term.namasteTerm} (${term.system})',
-                                  style: AppTextStyles.labelMedium.copyWith(
-                                    fontWeight: FontWeight.bold,
+                                return CheckboxListTile(
+                                  value: isSelected,
+                                  activeColor: AppColors.primary,
+                                  title: Text(
+                                    '${term.namasteTerm} (${term.system})',
+                                    style: AppTextStyles.labelMedium.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                subtitle: Text(
-                                  'ICD-11 TM2: ${term.tm2Code} • Bio: ${term.biomedicineCode}',
-                                  style: AppTextStyles.caption.copyWith(
-                                    color: AppColors.textSecondary,
+                                  subtitle: Text(
+                                    'ICD-11 TM2: ${term.tm2Code} • Bio: ${term.biomedicineCode}',
+                                    style: AppTextStyles.caption.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                                   ),
-                                ),
-                                onChanged: (val) {
-                                  setState(() {
-                                    if (val == true) {
-                                      _selectedDiagnoses.add(term);
-                                    } else {
-                                      _selectedDiagnoses.removeWhere(
-                                        (d) => d.id == term.id,
-                                      );
-                                    }
-                                  });
-                                },
-                              );
-                            },
+                                  onChanged: (val) {
+                                    setState(() {
+                                      if (val == true) {
+                                        _selectedDiagnoses.add(term);
+                                      } else {
+                                        _selectedDiagnoses.removeWhere(
+                                          (d) => d.id == term.id,
+                                        );
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ],
@@ -494,7 +490,7 @@ class _EncounterScreenState extends State<EncounterScreen> {
                           ),
                           onChanged: (val) {
                             setState(() {
-                              _consentGranted = val ?? true;
+                              _consentGranted = val ?? false;
                             });
                           },
                         ),

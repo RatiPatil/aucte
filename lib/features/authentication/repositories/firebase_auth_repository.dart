@@ -15,8 +15,8 @@ class FirebaseAuthRepository implements AuthRepository {
 
   static final FirebaseAuthRepository instance = FirebaseAuthRepository._();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: kIsWeb ? '80730281294-jpch8g7jepk3ofr7vglgsecs66ps8qbl.apps.googleusercontent.com' : null,
   );
@@ -343,6 +343,7 @@ class FirebaseAuthRepository implements AuthRepository {
       practitionerId: demoPractitionerId,
       ayushSystem: 'Ayurveda',
       institution: 'AUCTE Demonstration',
+      provider: 'local',
       password: '',
       createdAt: DateTime.now(),
     ),

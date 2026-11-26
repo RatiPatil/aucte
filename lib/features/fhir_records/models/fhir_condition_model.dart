@@ -92,7 +92,7 @@ class FhirConditionModel {
             {
               "system": _synthetic
                   ? "${_demoRoot}tm2"
-                  : "http://id.who.int/icd/release/11/mms",
+                  : "http://id.who.int/icd/release/11/mms/tm2",
               if (_synthetic) "version": _demoVersion,
               "code": term.tm2Code,
               "display": term.tm2Title,
@@ -101,7 +101,7 @@ class FhirConditionModel {
             {
               "system": _synthetic
                   ? "${_demoRoot}biomedicine"
-                  : "http://id.who.int/icd/release/11/mms",
+                  : "http://id.who.int/icd/release/11/mms/biomedicine",
               if (_synthetic) "version": _demoVersion,
               "code": term.biomedicineCode,
               "display": term.biomedicineTitle,

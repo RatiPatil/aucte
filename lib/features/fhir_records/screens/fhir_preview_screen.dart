@@ -83,7 +83,8 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
       if (args.containsKey('bundle') && args['bundle'] is FhirBundleModel) {
         bundle = args['bundle'] as FhirBundleModel;
       }
-      if (args.containsKey('encounter') && args['encounter'] is EncounterModel) {
+      if (args.containsKey('encounter') &&
+          args['encounter'] is EncounterModel) {
         encounter = args['encounter'] as EncounterModel;
       }
       if (args.containsKey('term') && args['term'] is ClinicalTermModel) {
@@ -120,9 +121,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
         _bundle = existing;
         _jsonContent = existing.toFormattedJson();
       } else {
-        final pat = patient ??
-            await LocalPatientRepository.instance
-                .getPatientById(encounter.patientId) ??
+        final pat =
+            patient ??
+            await LocalPatientRepository.instance.getPatientById(
+              encounter.patientId,
+            ) ??
             PatientModel(
               id: encounter.patientId,
               fullName: 'Patient ${encounter.patientId}',
@@ -135,7 +138,8 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
             );
-        final pract = LocalAuthRepository.instance.getCurrentPractitioner() ??
+        final pract =
+            LocalAuthRepository.instance.getCurrentPractitioner() ??
             PractitionerModel(
               id: encounter.practitionerId,
               fullName: 'Dr. AYUSH Specialist',
@@ -228,7 +232,9 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
   }
 
   void _uploadMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _copyToClipboard() {
@@ -279,10 +285,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
               icon: Icon(Icons.dashboard_customize_outlined, size: 20),
               text: 'Visual Breakdown',
             ),
-            Tab(
-              icon: Icon(Icons.code_rounded, size: 20),
-              text: 'FHIR JSON',
-            ),
+            Tab(icon: Icon(Icons.code_rounded, size: 20), text: 'FHIR JSON'),
           ],
         ),
       ),
@@ -374,8 +377,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -388,6 +394,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                         border: Border.all(color: AppColors.primary),
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(
                             Icons.verified_rounded,
@@ -395,11 +402,13 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                             color: AppColors.white,
                           ),
                           const SizedBox(width: 6),
-                          Text(
-                            'FHIR R4 DOCUMENT BUNDLE',
-                            style: AppTextStyles.caption.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
+                          Flexible(
+                            child: Text(
+                              'FHIR R4 BUNDLE',
+                              style: AppTextStyles.caption.copyWith(
+                                color: AppColors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -423,12 +432,10 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Profile: ${bundle.profileUrl}',
+                  'Terminology: demo-2.0',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.caption.copyWith(
-                    color: Colors.white60,
-                  ),
+                  style: AppTextStyles.caption.copyWith(color: Colors.white60),
                 ),
                 const SizedBox(height: 8),
                 Row(
@@ -439,10 +446,12 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                       color: Colors.white70,
                     ),
                     const SizedBox(width: 6),
-                    Text(
-                      'Generated: ${bundle.timestamp.day}/${bundle.timestamp.month}/${bundle.timestamp.year} at ${bundle.timestamp.hour}:${bundle.timestamp.minute.toString().padLeft(2, '0')}',
-                      style: AppTextStyles.caption.copyWith(
-                        color: Colors.white70,
+                    Expanded(
+                      child: Text(
+                        'Generated: ${bundle.timestamp.day}/${bundle.timestamp.month}/${bundle.timestamp.year} at ${bundle.timestamp.hour}:${bundle.timestamp.minute.toString().padLeft(2, '0')}',
+                        style: AppTextStyles.caption.copyWith(
+                          color: Colors.white70,
+                        ),
                       ),
                     ),
                   ],
@@ -462,9 +471,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Dual-Coded Diagnoses (Conditions)',
-                style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+              Expanded(
+                child: Text(
+                  'Dual-Coded Diagnoses (Conditions)',
+                  style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+                ),
               ),
             ],
           ),
@@ -483,9 +494,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Patient Resource',
-                style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+              Expanded(
+                child: Text(
+                  'Patient Resource',
+                  style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+                ),
               ),
             ],
           ),
@@ -503,9 +516,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Practitioner Resource',
-                style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+              Expanded(
+                child: Text(
+                  'Practitioner Resource',
+                  style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+                ),
               ),
             ],
           ),
@@ -523,9 +538,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Encounter Resource',
-                style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+              Expanded(
+                child: Text(
+                  'Encounter Resource',
+                  style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+                ),
               ),
             ],
           ),
@@ -543,9 +560,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  'Consent Resource (ABDM Policy)',
-                  style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+                Expanded(
+                  child: Text(
+                    'Consent Resource',
+                    style: AppTextStyles.headingSmall.copyWith(fontSize: 17),
+                  ),
                 ),
               ],
             ),
@@ -572,7 +591,9 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
             decoration: BoxDecoration(
               color: AppColors.primarySoft,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
@@ -618,14 +639,14 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 6,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: AppColors.primarySoft,
                   borderRadius: BorderRadius.circular(6),
@@ -639,10 +660,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: AppColors.successSoft,
                   borderRadius: BorderRadius.circular(6),
@@ -721,10 +739,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
           width: 8,
           height: 8,
           margin: const EdgeInsets.only(top: 5),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: color,
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -870,8 +885,11 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 6,
             children: [
               Text(
                 'Class: ${enc.encounterClass.display.toUpperCase()}',
@@ -918,11 +936,14 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 6,
             children: [
               Text(
-                'Policy: ABDM Patient Privacy',
+                'Patient privacy consent',
                 style: AppTextStyles.labelMedium.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.success,
@@ -957,10 +978,7 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppColors.primarySoft,
                   borderRadius: BorderRadius.circular(6),
@@ -1020,7 +1038,9 @@ class _FhirPreviewScreenState extends State<FhirPreviewScreen>
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('FHIR R4 Bundle Record verified & active.'),
+                        content: Text(
+                          'FHIR R4 Bundle Record verified & active.',
+                        ),
                         backgroundColor: AppColors.success,
                       ),
                     );
