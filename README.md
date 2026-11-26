@@ -4,7 +4,7 @@ AUCTE is an Android Flutter prototype for searching AYUSH terminology and export
 
 ## Run the Android app
 
-Install Flutter stable (Dart 3.11.3 or newer), Android Studio with its SDK, and a JDK supported by Android Gradle Plugin 8.11.1. Connect an Android phone or start an emulator.
+Use Flutter 3.41.9 (Dart 3.11.5), Android Studio with its SDK, and JDK 17 or 21. This Flutter version works with the project’s Gradle 8.14 and Android Gradle Plugin 8.11.1 toolchain. Connect an Android phone or start an emulator.
 
 ```sh
 flutter pub get

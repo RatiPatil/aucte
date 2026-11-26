@@ -331,8 +331,11 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
           const SizedBox(height: 10),
 
           // Results count bar
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 4,
             children: [
               Text(
                 '${_filteredTerms.length} terms',
@@ -341,6 +344,7 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
                 ),
               ),
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Container(
                     width: 6,
@@ -351,10 +355,12 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Text(
-                    'Demo Dataset (100 records)',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.warning,
+                  Flexible(
+                    child: Text(
+                      'Demo Dataset (${_allTerms.length} records)',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.warning,
+                      ),
                     ),
                   ),
                 ],
@@ -461,8 +467,10 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
             const SizedBox(height: 12),
             Text(term.description, style: AppTextStyles.bodyMedium),
             if (term.whoTerm.isNotEmpty)
-              Text('WHO Ayurveda term (sample): ${term.whoTerm}',
-                  style: AppTextStyles.bodySmall),
+              Text(
+                'WHO Ayurveda term (sample): ${term.whoTerm}',
+                style: AppTextStyles.bodySmall,
+              ),
 
             const SizedBox(height: 28),
 
@@ -557,7 +565,9 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
                   const Divider(height: 16),
                   _MetaRow(
                     label: 'Confidence',
-                    value: term.isDemo ? 'Synthetic' : '${(term.mappingConfidence * 100).toInt()}%',
+                    value: term.isDemo
+                        ? 'Synthetic'
+                        : '${(term.mappingConfidence * 100).toInt()}%',
                     valueColor: term.mappingConfidence >= 0.9
                         ? AppColors.success
                         : AppColors.warning,
@@ -704,22 +714,25 @@ class _TermResultTile extends StatelessWidget {
               style: AppTextStyles.bodySmall,
             ),
             const SizedBox(height: 8),
-            Row(
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 6,
+              runSpacing: 6,
               children: [
                 _CodePill(
                   label: 'TM2',
                   code: term.tm2Code,
                   color: const Color(0xFF16A36A),
                 ),
-                const SizedBox(width: 6),
                 _CodePill(
                   label: 'Bio',
                   code: term.biomedicineCode,
                   color: const Color(0xFF2563EB),
                 ),
-                const Spacer(),
                 Text(
-                  term.isDemo ? 'Synthetic mapping' : '${(term.mappingConfidence * 100).toInt()}% confidence',
+                  term.isDemo
+                      ? 'Synthetic mapping'
+                      : '${(term.mappingConfidence * 100).toInt()}% confidence',
                   style: AppTextStyles.caption.copyWith(
                     color: term.mappingConfidence >= 0.9
                         ? AppColors.success
@@ -781,18 +794,17 @@ class _CodePill extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '$label: ',
-            style: AppTextStyles.caption.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
+      child: Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-          ),
-          Text(code, style: AppTextStyles.caption.copyWith(color: color)),
-        ],
+            TextSpan(text: code),
+          ],
+        ),
+        style: AppTextStyles.caption.copyWith(color: color),
       ),
     );
   }
@@ -830,11 +842,13 @@ class _PipelineNode extends StatelessWidget {
             children: [
               Icon(icon, size: 14, color: color),
               const SizedBox(width: 5),
-              Text(
-                tier,
-                style: AppTextStyles.caption.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  tier,
+                  style: AppTextStyles.caption.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
