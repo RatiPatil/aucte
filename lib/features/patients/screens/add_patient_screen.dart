@@ -9,7 +9,7 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/patient_model.dart';
-import '../repositories/firestore_patient_repository.dart';
+import '../repositories/local_patient_repository.dart';
 import '../repositories/patient_repository.dart';
 
 class AddPatientScreen extends StatefulWidget {
@@ -249,7 +249,7 @@ class _AddPatientScreenState extends State<AddPatientScreen> {
         updatedAt: DateTime.now(),
       );
 
-      final PatientRepository patientRepo = FirestorePatientRepository.instance;
+      final PatientRepository patientRepo = LocalPatientRepository.instance;
       await patientRepo.addPatient(patient);
 
       if (!mounted) return;

@@ -11,7 +11,16 @@ flutter pub get
 flutter run
 ```
 
-Complete onboarding and choose **Continue with sample data** on the sign-in screen. Search, mapping, encounter entry, and FHIR preview work offline. The existing Firebase sign-in is independent of the demonstration account.
+Complete onboarding and choose **Continue with sample data** on the sign-in screen. Search, mapping, encounter entry, and FHIR preview work offline. Google is the only account sign-in method. The sample-data entry stays available offline. Firebase is used for Authentication. Patient records, encounters, and terminology use the app’s local repositories or the configured demo API.
+
+## Connect your Firebase project for Google login
+
+1. In the new Firebase project, register an Android app with package `in.gov.ayush.aucte`.
+2. Run `cd android` and then `./gradlew signingReport` (Windows: `gradlew.bat signingReport`) after the first Flutter Android build creates the wrapper. Add the SHA-1 and SHA-256 fingerprints for the certificate that signs the installed build. Repeat for the release certificate if you distribute a release build.
+3. In Firebase Authentication, enable **Google** under **Sign-in method** and select a support email. Download the updated `google-services.json` from the Android app's Firebase settings so it includes the OAuth client. See [Firebase’s Android Google sign-in guide](https://firebase.google.com/docs/auth/android/google-signin).
+4. Save the file as `android/app/google-services.json` and rebuild the app. That path is ignored by Git. Open **Sign in with Google** to verify the account picker, dashboard, and sign-out. Ensure the account appears in the new Firebase project's Authentication users list.
+
+The Android app can build and open its sample-data mode before the Firebase file is added.
 
 ## Run the terminology service
 

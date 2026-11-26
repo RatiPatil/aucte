@@ -42,16 +42,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final terms = await LocalTerminologyRepository.instance.getAllTerms();
     final bundles = await LocalFhirRecordRepository.instance.getBundles();
 
-    // Determine Firebase connectivity by checking if Firebase Auth has an active user
-    // A non-null FirebaseAuth currentUser indicates Firebase is reachable.
-    bool firebaseConnected = false;
-    try {
-      final firebaseUser = FirebaseAuthRepository.instance.isLoggedIn;
-      firebaseConnected = firebaseUser;
-    } catch (_) {
-      firebaseConnected = false;
-    }
-
     if (mounted) {
       setState(() {
         _currentPractitioner = practitioner;
@@ -60,9 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _termCount = terms.isEmpty ? 100 : terms.length;
         _fhirBundleCount = bundles.length;
         _isLoading = false;
-        _isFirebaseConnected = firebaseConnected &&
-            (practitioner?.provider == 'google' ||
-                practitioner?.provider == 'email');
+        _isFirebaseConnected = practitioner?.provider == 'google';
       });
     }
   }
@@ -456,10 +444,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       const Divider(height: 18),
                       _StatusRow(
-                        title: 'Firebase Integration',
+                        title: 'Account sign-in',
                         statusText: _isFirebaseConnected
-                            ? 'Connected'
-                            : 'Offline — Local Mode Active',
+                            ? 'Google account'
+                            : 'Sample-data mode',
                         isGreen: _isFirebaseConnected,
                       ),
                     ],

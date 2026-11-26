@@ -2,7 +2,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'app.dart';
-import 'core/config/firebase_options.dart';
 import 'core/services/shared_preferences_service.dart';
 
 Future<void> main() async {
@@ -11,9 +10,7 @@ Future<void> main() async {
   await SharedPreferencesService.instance.initialize();
 
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await Firebase.initializeApp();
   } catch (e) {
     debugPrint('Firebase initialization warning: $e');
   }

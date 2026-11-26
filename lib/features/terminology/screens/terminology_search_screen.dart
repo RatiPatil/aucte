@@ -4,8 +4,6 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/clinical_term_model.dart';
-import '../../authentication/repositories/firebase_auth_repository.dart';
-import '../repositories/firestore_terminology_repository.dart';
 import '../repositories/local_terminology_repository.dart';
 import '../repositories/terminology_repository.dart';
 
@@ -25,11 +23,7 @@ class _TerminologySearchScreenState extends State<TerminologySearchScreen>
     with SingleTickerProviderStateMixin {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
-  TerminologyRepository get _repo =>
-      FirebaseAuthRepository.instance.getCurrentPractitioner()?.id ==
-          FirebaseAuthRepository.demoPractitionerId
-      ? LocalTerminologyRepository.instance
-      : FirestoreTerminologyRepository.instance;
+  final TerminologyRepository _repo = LocalTerminologyRepository.instance;
 
   List<ClinicalTermModel> _allTerms = [];
   List<ClinicalTermModel> _filteredTerms = [];

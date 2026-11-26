@@ -65,9 +65,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (confirm == true) {
-      // FirebaseAuthRepository.logout() signs out of both Firebase
-      // and Google Sign-In, then clears the local session.
-      await FirebaseAuthRepository.instance.logout();
+      try {
+        await FirebaseAuthRepository.instance.logout();
+      } catch (error) {
+        debugPrint('Google or Firebase sign-out failed: $error');
+      }
       if (!mounted) return;
       Navigator.pushNamedAndRemoveUntil(
         context,

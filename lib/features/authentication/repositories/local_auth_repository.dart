@@ -16,7 +16,15 @@ class LocalAuthRepository implements AuthRepository {
 
   bool get isDemoSession => getCurrentPractitioner()?.id == 'DEMO-PRACT-001';
 
-  String clinicalStorageKey(String key) => isDemoSession ? '${key}_demo' : key;
+  String clinicalStorageKey(String key) {
+    if (isDemoSession) return '${key}_demo';
+    final project = _storage.getString(StorageKeys.authProject);
+    final practitioner = getCurrentPractitioner();
+    if (project != null && practitioner?.provider == 'google') {
+      return '${key}_${project}_${practitioner!.id}';
+    }
+    return key;
+  }
 
   @override
   bool get isLoggedIn {

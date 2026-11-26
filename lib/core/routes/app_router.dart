@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../features/authentication/screens/login_screen.dart';
-import '../../features/authentication/screens/register_screen.dart';
 import '../../features/consent/screens/consent_screen.dart';
 import '../../features/encounters/screens/encounter_screen.dart';
 import '../../features/fhir_records/screens/fhir_preview_screen.dart';
@@ -28,7 +27,7 @@ abstract final class AppRouter {
         return _fadeRoute(const LoginScreen(), settings);
 
       case AppRoutes.register:
-        return _slideRoute(const RegisterScreen(), settings);
+        return _fadeRoute(const LoginScreen(), settings);
 
       case AppRoutes.dashboard:
         return _fadeRoute(const MainShellScreen(initialIndex: 0), settings);

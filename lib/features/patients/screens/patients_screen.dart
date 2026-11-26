@@ -4,7 +4,7 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/patient_model.dart';
-import '../repositories/firestore_patient_repository.dart';
+import '../repositories/local_patient_repository.dart';
 import '../repositories/patient_repository.dart';
 
 class PatientsScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class PatientsScreen extends StatefulWidget {
 
 class _PatientsScreenState extends State<PatientsScreen> {
   final _searchController = TextEditingController();
-  final PatientRepository _patientRepo = FirestorePatientRepository.instance;
+  final PatientRepository _patientRepo = LocalPatientRepository.instance;
 
   List<PatientModel> _patients = [];
   bool _isLoading = true;

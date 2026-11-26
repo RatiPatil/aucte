@@ -6,6 +6,7 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/services/shared_preferences_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
+import '../../authentication/repositories/firebase_auth_repository.dart';
 import '../widgets/animated_logo.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -32,7 +33,8 @@ class _SplashScreenState extends State<SplashScreen> {
     final onboardingCompleted =
         _storage.getBool(StorageKeys.onboardingCompleted) ?? false;
 
-    final loggedIn = _storage.getBool(StorageKeys.isLoggedIn) ?? false;
+    final loggedIn =
+        FirebaseAuthRepository.instance.getCurrentPractitioner() != null;
 
     if (!onboardingCompleted) {
       Navigator.pushReplacementNamed(context, AppRoutes.onboarding);

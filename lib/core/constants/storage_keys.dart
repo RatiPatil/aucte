@@ -3,6 +3,8 @@ abstract final class StorageKeys {
 
   static const String isLoggedIn = 'is_logged_in';
 
+  static const String authProject = 'auth_firebase_project';
+
   static const String currentPractitioner = 'current_practitioner';
 
   static const String registeredPractitioners = 'registered_practitioners';
