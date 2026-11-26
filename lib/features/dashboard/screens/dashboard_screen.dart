@@ -445,7 +445,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const Divider(height: 18),
                       const _StatusRow(
                         title: 'WHO ICD-11 TM2',
-                        statusText: 'Mapped (Demo Version 1.0)',
+                        statusText: 'Mapped (Demo Version 2.0)',
                         isGreen: true,
                       ),
                       const Divider(height: 18),

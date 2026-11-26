@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
@@ -18,7 +17,7 @@ abstract final class AppTheme {
       brightness: Brightness.light,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.background,
-      fontFamily: GoogleFonts.inter().fontFamily,
+      fontFamily: 'Inter',
 
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.white,
@@ -26,7 +25,8 @@ abstract final class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: TextStyle(
+          fontFamily: 'Inter',
           color: AppColors.textPrimary,
           fontSize: 18,
           fontWeight: FontWeight.w800,
@@ -45,8 +45,13 @@ abstract final class AppTheme {
           horizontal: 16,
           vertical: 17,
         ),
-        hintStyle: GoogleFonts.inter(color: AppColors.textMuted, fontSize: 13),
-        labelStyle: GoogleFonts.inter(
+        hintStyle: TextStyle(
+          fontFamily: 'Inter',
+          color: AppColors.textMuted,
+          fontSize: 13,
+        ),
+        labelStyle: TextStyle(
+          fontFamily: 'Inter',
           color: AppColors.textSecondary,
           fontSize: 13,
         ),
@@ -76,7 +81,8 @@ abstract final class AppTheme {
         surfaceTintColor: Colors.transparent,
         indicatorColor: AppColors.primarySoft,
         labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => GoogleFonts.inter(
+          (states) => TextStyle(
+            fontFamily: 'Inter',
             fontSize: 10,
             fontWeight: states.contains(WidgetState.selected)
                 ? FontWeight.w800
@@ -97,7 +103,8 @@ abstract final class AppTheme {
 
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: GoogleFonts.inter(
+        contentTextStyle: TextStyle(
+          fontFamily: 'Inter',
           color: AppColors.white,
           fontSize: 12,
           fontWeight: FontWeight.w600,

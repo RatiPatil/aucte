@@ -1,6 +1,7 @@
 import 'package:uuid/uuid.dart';
 
 import '../../../core/services/shared_preferences_service.dart';
+import '../../authentication/repositories/local_auth_repository.dart';
 import '../models/encounter_model.dart';
 import 'encounter_repository.dart';
 
@@ -12,7 +13,7 @@ class LocalEncounterRepository implements EncounterRepository {
   final SharedPreferencesService _storage = SharedPreferencesService.instance;
   final Uuid _uuid = const Uuid();
 
-  static const String _encountersStorageKey = 'aucte_local_encounters_list';
+  String get _encountersStorageKey => LocalAuthRepository.instance.clinicalStorageKey('aucte_local_encounters_list');
 
   Future<List<EncounterModel>> _loadEncounters() async {
     final list = _storage.getStringList(_encountersStorageKey);

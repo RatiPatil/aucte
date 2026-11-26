@@ -115,7 +115,7 @@ class SettingsScreen extends StatelessWidget {
                         '100 Demo Terms (40 Ayurveda, 30 Siddha, 30 Unani)',
                       ),
                       trailing: Text(
-                        'demo-1.0',
+                        'demo-2.0',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),

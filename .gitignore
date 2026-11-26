@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# AUCTE local service data
+/aucte-demo.sqlite
+/who_snapshot.json

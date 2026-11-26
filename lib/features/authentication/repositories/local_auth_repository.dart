@@ -14,6 +14,10 @@ class LocalAuthRepository implements AuthRepository {
 
   final Uuid _uuid = const Uuid();
 
+  bool get isDemoSession => getCurrentPractitioner()?.id == 'DEMO-PRACT-001';
+
+  String clinicalStorageKey(String key) => isDemoSession ? '${key}_demo' : key;
+
   @override
   bool get isLoggedIn {
     return _storage.getBool(StorageKeys.isLoggedIn) ?? false;

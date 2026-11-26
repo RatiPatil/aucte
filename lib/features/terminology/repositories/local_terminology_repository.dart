@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/services.dart';
 
+import '../../../core/services/demo_api.dart';
 import '../models/clinical_term_model.dart';
 import 'terminology_repository.dart';
 
@@ -17,6 +19,13 @@ class LocalTerminologyRepository implements TerminologyRepository {
       return _cachedTerms!;
     }
 
+    if (DemoApi.configured) {
+      try {
+        return _cachedTerms = _parseTerms(await DemoApi.getTerms());
+      } catch (_) {
+        // The bundled CSV snapshot keeps terminology usable offline.
+      }
+    }
     try {
       final jsonString = await rootBundle.loadString(
         'assets/data/namaste_demo.json',
@@ -25,19 +34,20 @@ class LocalTerminologyRepository implements TerminologyRepository {
           jsonDecode(jsonString) as Map<String, dynamic>;
       final List<dynamic> termsList = data['terms'] as List<dynamic>? ?? [];
 
-      _cachedTerms = termsList
-          .map(
-            (item) => ClinicalTermModel.fromMap(
-              Map<String, dynamic>.from(item as Map),
-            ),
-          )
-          .toList();
+      _cachedTerms = _parseTerms(termsList);
 
       return _cachedTerms!;
     } catch (e) {
       return [];
     }
   }
+
+  List<ClinicalTermModel> _parseTerms(List<dynamic> terms) => terms
+      .map(
+        (item) =>
+            ClinicalTermModel.fromMap(Map<String, dynamic>.from(item as Map)),
+      )
+      .toList();
 
   @override
   Future<List<ClinicalTermModel>> getAllTerms() async {
@@ -60,7 +70,8 @@ class LocalTerminologyRepository implements TerminologyRepository {
       final desc = t.description.toLowerCase().contains(q);
       final sys = t.system.toLowerCase().contains(q);
 
-      return namasteTerm ||
+      return t.whoTerm.toLowerCase().contains(q) ||
+          namasteTerm ||
           namasteCode ||
           tm2Title ||
           tm2Code ||

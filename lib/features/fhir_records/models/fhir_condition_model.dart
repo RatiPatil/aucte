@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import '../../terminology/models/clinical_term_model.dart';
 
 /// Standard FHIR R4 Condition Resource Model featuring AUCTE Dual Coding.
@@ -29,6 +30,11 @@ class FhirConditionModel {
   final ClinicalTermModel term;
   final String? notes;
 
+  static const _demoRoot = 'https://aucte.example/fhir/CodeSystem/demo-';
+  static const _demoVersion = 'demo-2.0';
+
+  bool get _synthetic => term.isDemo || term.namasteCode.startsWith('DEMO-');
+
   Map<String, dynamic> toFhirResource() {
     return {
       "resourceType": "Condition",
@@ -36,7 +42,8 @@ class FhirConditionModel {
       "clinicalStatus": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+            "system":
+                "http://terminology.hl7.org/CodeSystem/condition-clinical",
             "code": clinicalStatus,
             "display": clinicalStatus.isNotEmpty
                 ? clinicalStatus[0].toUpperCase() + clinicalStatus.substring(1)
@@ -47,11 +54,12 @@ class FhirConditionModel {
       "verificationStatus": {
         "coding": [
           {
-            "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+            "system":
+                "http://terminology.hl7.org/CodeSystem/condition-ver-status",
             "code": verificationStatus,
             "display": verificationStatus.isNotEmpty
                 ? verificationStatus[0].toUpperCase() +
-                    verificationStatus.substring(1)
+                      verificationStatus.substring(1)
                 : 'Confirmed',
           },
         ],
@@ -62,8 +70,8 @@ class FhirConditionModel {
             {
               "system":
                   "http://terminology.hl7.org/CodeSystem/condition-category",
-              "code": "encounter-diagnosis",
-              "display": "Encounter Diagnosis",
+              "code": "problem-list-item",
+              "display": "Problem List Item",
             },
           ],
         },
@@ -72,46 +80,45 @@ class FhirConditionModel {
         "coding": [
           // 1. Primary Traditional AYUSH Concept (NAMASTE)
           {
-            "system":
-                "https://aucte.ayush.gov.in/fhir/namaste/${term.system.toLowerCase()}",
+            "system": _synthetic
+                ? "${_demoRoot}namaste"
+                : "https://aucte.ayush.gov.in/fhir/namaste/${term.system.toLowerCase()}",
+            if (_synthetic) "version": _demoVersion,
             "code": term.namasteCode,
             "display": term.namasteTerm,
             "userSelected": true,
           },
-          // 2. WHO ICD-11 TM2 (Traditional Medicine Module 2)
-          {
-            "system": "http://id.who.int/icd/release/11/mms/tm2",
-            "code": term.tm2Code,
-            "display": term.tm2Title,
-          },
-          // 3. WHO ICD-11 Biomedicine Classification
-          {
-            "system": "http://id.who.int/icd/release/11/mms/biomedicine",
-            "code": term.biomedicineCode,
-            "display": term.biomedicineTitle,
-          },
+          if (term.tm2Code.isNotEmpty)
+            {
+              "system": _synthetic
+                  ? "${_demoRoot}tm2"
+                  : "http://id.who.int/icd/release/11/mms/tm2",
+              if (_synthetic) "version": _demoVersion,
+              "code": term.tm2Code,
+              "display": term.tm2Title,
+            },
+          if (term.biomedicineCode.isNotEmpty)
+            {
+              "system": _synthetic
+                  ? "${_demoRoot}biomedicine"
+                  : "http://id.who.int/icd/release/11/mms/biomedicine",
+              if (_synthetic) "version": _demoVersion,
+              "code": term.biomedicineCode,
+              "display": term.biomedicineTitle,
+            },
         ],
         "text": "${term.namasteTerm} [${term.system}]",
       },
-      "subject": {
-        "reference": "Patient/$subjectId",
-        "type": "Patient",
-      },
-      "encounter": {
-        "reference": "Encounter/$encounterId",
-        "type": "Encounter",
-      },
-      "recordedDate": recordedDate.toIso8601String(),
+      "subject": {"reference": "Patient/$subjectId", "type": "Patient"},
+      "encounter": {"reference": "Encounter/$encounterId", "type": "Encounter"},
+      "recordedDate": recordedDate.toUtc().toIso8601String(),
       if (notes != null && notes!.isNotEmpty)
         "note": [
           {"text": notes},
         ],
       "meta": {
         "versionId": "1",
-        "lastUpdated": DateTime.now().toIso8601String(),
-        "profile": [
-          "https://nrces.in/ndhm/fhir/r4/StructureDefinition/Condition",
-        ],
+
         "tag": [
           {
             "system": "https://aucte.ayush.gov.in/tags",
@@ -142,7 +149,7 @@ class FhirConditionModel {
 
   factory FhirConditionModel.fromFhirMap(Map<String, dynamic> map) {
     final id = map['id']?.toString() ?? '';
-    
+
     // clinical status
     String clinStat = 'active';
     final cs = map['clinicalStatus'] as Map<String, dynamic>?;
@@ -178,7 +185,8 @@ class FhirConditionModel {
       eId = encRef;
     }
 
-    final recDate = DateTime.tryParse(map['recordedDate']?.toString() ?? '') ??
+    final recDate =
+        DateTime.tryParse(map['recordedDate']?.toString() ?? '') ??
         DateTime.now();
 
     // Parse dual codings
@@ -221,6 +229,10 @@ class FhirConditionModel {
       }
     }
 
+    final synthetic = namasteCode.startsWith('DEMO-');
+    if (namasteCode.startsWith('DEMO-NAM-SID-')) system = 'Siddha';
+    if (namasteCode.startsWith('DEMO-NAM-UNA-')) system = 'Unani';
+
     if (namasteTerm.isEmpty && codeMap.containsKey('text')) {
       namasteTerm = codeMap['text'].toString();
     }
@@ -236,9 +248,9 @@ class FhirConditionModel {
       biomedicineCode: bioCode,
       biomedicineTitle: bioTitle,
       mappingType: 'dual-coded',
-      mappingConfidence: 0.95,
+      mappingConfidence: synthetic ? 0 : 0.95,
       source: 'AUCTE FHIR R4 Engine',
-      isDemo: false,
+      isDemo: synthetic,
     );
 
     return FhirConditionModel(

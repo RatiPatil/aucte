@@ -76,6 +76,23 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _openDemo() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    try {
+      await _authRepo.startDemoSession();
+      if (mounted) Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _errorMessage = 'Could not open the demo session.');
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   Future<void> _signInWithGoogle() async {
     setState(() {
       _isGoogleLoading = true;
@@ -374,6 +391,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
 
                   const SizedBox(height: 28),
+
+                  TextButton(
+                    onPressed: (_isLoading || _isGoogleLoading) ? null : _openDemo,
+                    child: const Text('Continue with sample data'),
+                  ),
 
                   // ─── Register Link ─────────────────────────────────────
                   Row(

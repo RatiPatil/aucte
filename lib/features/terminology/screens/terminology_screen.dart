@@ -4,7 +4,9 @@ import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../models/clinical_term_model.dart';
+import '../../authentication/repositories/firebase_auth_repository.dart';
 import '../repositories/firestore_terminology_repository.dart';
+import '../repositories/local_terminology_repository.dart';
 import '../repositories/terminology_repository.dart';
 import '../widgets/term_card.dart';
 
@@ -17,7 +19,11 @@ class TerminologyScreen extends StatefulWidget {
 
 class _TerminologyScreenState extends State<TerminologyScreen> {
   final _searchController = TextEditingController();
-  final TerminologyRepository _repo = FirestoreTerminologyRepository.instance;
+  TerminologyRepository get _repo =>
+      FirebaseAuthRepository.instance.getCurrentPractitioner()?.id ==
+          FirebaseAuthRepository.demoPractitionerId
+      ? LocalTerminologyRepository.instance
+      : FirestoreTerminologyRepository.instance;
 
   List<ClinicalTermModel> _terms = [];
   String _selectedSystem = 'All';
@@ -200,7 +206,7 @@ class _TerminologyScreenState extends State<TerminologyScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Mapping Confidence: ${(term.mappingConfidence * 100).toInt()}%',
+                    term.isDemo ? 'Synthetic mapping' : 'Mapping Confidence: ${(term.mappingConfidence * 100).toInt()}%',
                     style: AppTextStyles.bodySmall.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
