@@ -95,5 +95,6 @@ void main() {
     expect(bundles.single.patient.id, 'AUC-PAT-1001');
     expect(bundles.single.isDualCoded, isTrue);
     expect(bundles.single.consent?.status, 'active');
+    expect(bundles.single.consent?.category.coding.single.code, '59284-0');
   });
 }

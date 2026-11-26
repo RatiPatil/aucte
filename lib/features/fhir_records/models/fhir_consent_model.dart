@@ -63,9 +63,9 @@ class FhirConsentModel {
       category: const FhirCodeableConcept(
         coding: [
           FhirCoding(
-            system: "http://terminology.hl7.org/CodeSystem/consentcategorycodes",
-            code: "acd",
-            display: "Advance Care Directive",
+            system: "http://loinc.org",
+            code: "59284-0",
+            display: "Consent Document",
           ),
         ],
       ),

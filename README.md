@@ -36,7 +36,7 @@ The debug build permits local HTTP. Use this configuration with synthetic data o
 
 1. **CSV import.** Start the service. The normalized `service/namaste_demo.csv` contains Ayurveda, Siddha, and Unani sample records. Show its generated NAMASTE CodeSystem and the TM2, Biomedicine, and WHO Ayurveda ConceptMaps.
 2. **Search and mapping.** Open terminology search and enter `Jvara` or `DEMO-TM2-AYU-101`. Open the result and show the NAMASTE, TM2, and Biomedicine labels. The WHO Ayurveda label is a sample search term. Use the API to demonstrate the reverse TM2-to-NAMASTE translation.
-3. **Encounter and Problem List.** Start an encounter for a preloaded patient. Select the sample diagnosis, grant consent, and save. Open **FHIR JSON** and show the `problem-list-item` Condition, its synthetic traditional and biomedical codings, the linked Encounter, and the versioned Consent.
+3. **Encounter and Problem List.** Start an encounter for a preloaded patient. Select the sample diagnosis, grant consent, and save. Open **FHIR JSON** and show the `problem-list-item` Condition, its synthetic traditional and biomedical codings, the linked Encounter, and the versioned Consent, categorized as a [LOINC Consent Document](https://loinc.org/59284-0).
 4. **Upload and audit.** Tap the cloud upload icon in FHIR preview. The service checks the sample mappings, references and active consent before saving the Bundle and an audit receipt. Reuploading the same Bundle returns the existing receipt. Fetch the receipt using the Bundle ID in the preview.
 5. **WHO updates.** Show the release-pinned sync command below. It uses real WHO endpoints when credentials and curated entity IDs are available. The installed demo runs with the synthetic CSV without those prerequisites.
 
